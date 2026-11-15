@@ -1,19 +1,38 @@
-# Security scope and limitations
+# 安全与隐私说明
 
-This is a limited source review, not a penetration test, independent audit, or guarantee of safety.
+AI Monitor 复用 CodexBar 的账户和数据接入能力。本页说明本次定制的检查范围与凭据使用边界，不构成独立安全审计或零风险保证。
 
-## Reviewed facts
+[返回首页](README.md) · [架构设计](ARCHITECTURE.md)
 
-- The AI Monitor UI changes introduce no network destinations, credential reads, or model inference requests. Mac status uses local system statistics.
-- Upstream provider/core code and dependency manifests were unchanged from the stated baseline. This does not prove those upstream components are free of vulnerabilities.
-- The reviewed Claude CLI path requests `/usage` and `/status`. Its launch arguments disable all hooks and remote control, clear allowed tools, and use strict MCP configuration. The installed CLI and its provenance must still be trusted.
-- The reviewed Claude OAuth fetcher targets `https://api.anthropic.com`; Codex OAuth includes OpenAI/ChatGPT endpoints. This is not an exhaustive audit of every optional provider and every runtime network request.
-- A Claude OAuth token observed during private verification included `user:inference`; it must not be described as a guaranteed read-only token. No actual token is included here.
+## 发布内容
 
-## Remaining risks
+源码仓库与安装包不包含开发者的账户配置、登录凭据、签名私钥或实际用量历史。首页截图使用明确的示例数据，由组件视图直接渲染。
 
-Credential-bearing software, a malicious dependency, compromised device, modified CLI, or tampered binary can expose sessions or misuse the permissions they carry. Keep providers limited to those you need, review updates, and revoke sessions if compromise is suspected. Source availability helps review but is not a safety certification.
+安装后，应用依赖使用者自己的登录与授权。不同提供方、来源和可选功能可能访问不同服务；本次检查没有覆盖上游所有可选功能的全部网络行为。
 
-Credential settings are per-user, not bundled defaults that silently authorize access. CLI mode is available when direct Keychain reading is not desired. The public export excludes personal configs, logs, account snapshots, signing keys and signing private keys. The separately published application is development-signed and not notarized.
+## 本次定制的检查范围
 
-The MIT license and upstream attribution remain intact. Do not publish credential-bearing bug reports or screenshots.
+| 范围 | 检查结论 |
+| --- | --- |
+| 定制 UI | 未新增网络目的地、凭据读取或模型推理请求。 |
+| Mac 状态 | 通过本机系统接口读取 CPU、内存和文件系统指标。 |
+| 提供方核心与依赖 | 发布基线中保持与所标注的上游提交一致。 |
+| Claude CLI 路径 | 查询 `/usage` 与 `/status`；上游启动参数禁用 hooks 和远程控制，清空允许工具并采用严格 MCP 配置。仍需信任所安装 CLI 本身。 |
+| 部分 OAuth 路径 | 检查过 Claude 的 Anthropic API 地址，以及 Codex 的 OpenAI / ChatGPT 相关地址；不是所有运行时请求的完整审计。 |
+| 发布文件 | 检查了本次新增文件中的常见凭据模式及个人配置排除情况，并核对了上传安装包的 SHA256。 |
+
+## 凭据权限
+
+不能将登录凭据一概描述为“只读”。部分 OAuth 令牌可能具有模型调用权限；若设备、依赖、CLI 或应用被篡改，凭据可能被盗用并消耗额度。
+
+钥匙串与账户权限应由使用者按需授权。不要将密码或令牌提交到 GitHub Issues，不要从不明来源安装修改后的构建。怀疑凭据泄露时，应在相应平台撤销会话或令牌。
+
+## 签名与分发
+
+当前为开发证书签名的测试版，未做 Apple Developer ID 公证。签名完整性与 SHA256 校验能够帮助检查文件是否匹配，但不证明不存在漏洞，也不能替代异机安装验收。
+
+本版没有启用官方自动更新渠道，避免定制界面被上游安装包覆盖。更新通过本项目 Releases 手动完成。
+
+## 问题反馈
+
+一般缺陷可通过 GitHub Issues 反馈，并先遮盖账户信息。涉及可利用漏洞时，先提供不含凭据与可利用细节的联系请求，再协商私下披露方式；本项目暂未建立独立安全响应团队或响应时限承诺。

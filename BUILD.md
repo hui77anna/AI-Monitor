@@ -1,6 +1,12 @@
 # 构建 AI Monitor
 
-macOS、完整 Xcode、仓库要求的 Swift 工具链、Apple Silicon 和可用的 Apple 签名证书。依赖版本由原项目 Package.resolved 锁定。
+[返回首页](README.md) · [架构设计](ARCHITECTURE.md)
+
+## 环境
+
+需要 Apple Silicon Mac、完整 Xcode、Swift 6.2 或满足仓库要求的更新工具链，以及可用的 Apple 签名证书。依赖版本由原项目 Package.resolved 锁定。
+
+## 打包
 
 ```sh
 APP_TEAM_ID=YOUR_TEAM_ID \
@@ -15,3 +21,7 @@ AI_MONITOR_SIGNING_IDENTITY=YOUR_CERTIFICATE_SHA1 \
 本版变更：Sources/CodexBarWidget 中的定制外观与本机状态卡片、相关渲染测试、Scripts/package_ai_monitor.sh、version.env。额度提供方、核心读取逻辑和依赖清单沿用上游基线。
 
 构建号 182；面向本定制版的 GitHub 版本为 0.1.0-beta.1。主程序内部保留上游版本 0.84.1，方便追踪兼容性。
+
+## 界面验证
+
+组件截图由视图代码直接渲染，生成步骤见 [截图说明](docs/ai-monitor/SCREENSHOTS.md)。版本验证范围见 [验证记录](docs/ai-monitor/RELEASE-VALIDATION.md)。
