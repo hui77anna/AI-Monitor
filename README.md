@@ -9,14 +9,16 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14%2B-20232a?style=flat-square&logo=apple&logoColor=white)](INSTALL.zh-CN.md)
 [![Architecture](https://img.shields.io/badge/芯片-Apple%20Silicon-6256c7?style=flat-square)](INSTALL.zh-CN.md)
-[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.1)
+[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%202-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.2)
 [![License](https://img.shields.io/badge/License-MIT-337f76?style=flat-square)](LICENSE)
 
-**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.1/AI-Monitor-0.1.0-beta.1-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
+**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.2/AI-Monitor-0.1.0-beta.2-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
 
 基于 [CodexBar](https://github.com/steipete/CodexBar) 的社区 UI 定制项目 · SwiftUI / WidgetKit 原生组件
 
 </div>
+
+> **Beta 2 更新**：修复从 CodexBar Studio 改名升级后，组件可能仍从旧路径启动而黑屏的问题。已完成 60 次真实桌面切换及重启、重装回归。[根因与测试记录](docs/ai-monitor/BLACK-SCREEN-FIX.md)
 
 ## 桌面预览
 
@@ -84,8 +86,8 @@ flowchart LR
 
 | 项目 | 当前状态 |
 | --- | --- |
-| 对外版本 | `0.1.0-beta.1` |
-| 应用内部版本 | `0.84.1` / Build `182`，保留上游版本以追踪兼容性 |
+| 对外版本 | `0.1.0-beta.2` |
+| 应用内部版本 | `0.84.1` / Build `183`，保留上游版本以追踪兼容性 |
 | 上游基线 | [steipete/CodexBar · 7447bc7](https://github.com/steipete/CodexBar/commit/7447bc77c2497323d9c41e40164ce705533493c8) |
 | 主要变更 | 桌面卡片 UI、Mac 状态组件、显示名称与打包脚本 |
 | 更新方式 | 从本仓库 Releases 手动下载，当前不启用自动更新 |
@@ -103,7 +105,7 @@ flowchart LR
 不是。AI Monitor 是基于 CodexBar 的社区定制版，原名 CodexBar Studio，保留上游数据能力并修改桌面展示。
 
 **是否需要同时运行原版 CodexBar？**
-不需要。AI Monitor 包含完整主程序。请退出旧 CodexBar Studio，避免重复运行；本版保留与 Studio 相同的内部身份，并沿用 CodexBar 配置路径。
+不需要。AI Monitor 包含完整主程序。请退出旧 CodexBar Studio，避免重复运行；本版保留主程序账户设置兼容性，并沿用 CodexBar 配置路径；组件已采用独立扩展标识，旧卡片需重新添加一次。
 
 **为什么数字没有立即变化？**
 提供方缓存、后台轮询与 WidgetKit 分别控制不同阶段。平台额度与本地 token 记录的更新时机也不同，详情见架构文档。

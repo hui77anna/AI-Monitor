@@ -98,10 +98,14 @@ UI 改版不改变平台数据口径，也不能消除上游缓存与系统调�
 | WidgetKit 基础时间线与交互 | Mac 状态卡片及本地采样 |
 | 锁定的依赖版本 | 应用显示名称、组件目录名称与打包入口 |
 
-应用保留 `com.steipete.codexbar.debug` 内部标识以兼容已有 CodexBar Studio 安装；App Group 与签名团队相关。不要同时运行两个相同内部身份的副本。原版 CodexBar 与本定制版还会沿用部分相同配置路径，建议择一运行。
+主程序保留 `com.steipete.codexbar.debug` 以兼容已有账户设置；Beta 2 组件采用 `com.steipete.codexbar.debug.aimonitor.widget` 独立扩展标识。App Group 与签名团队相关。旧桌面卡片需重新添加一次，不要同时运行多个主程序副本。原版 CodexBar 与本定制版还会沿用部分相同配置路径，建议择一运行。
 
 ## 7. 发布与验证边界
 
-公开版本为 `0.1.0-beta.1`，应用内保留上游版本 `0.84.1`、构建号 `182`。当前仅提供 Apple Silicon 的开发签名构建，尚未公证；自动更新关闭，手动从本项目 Releases 更新。
+公开版本为 `0.1.0-beta.2`，应用内保留上游版本 `0.84.1`、构建号 `183`。当前仅提供 Apple Silicon 的开发签名构建，尚未公证；自动更新关闭，手动从本项目 Releases 更新。
 
 已完成的本机验证与尚未覆盖的安装场景分别记录在 [版本验证说明](docs/ai-monitor/RELEASE-VALIDATION.md)。源码可供审阅，安全边界见 [安全与隐私说明](SECURITY-AI-MONITOR.md)。
+
+## 8. 安装身份与黑屏回归
+
+扩展启动服务以 Bundle ID 识别组件。将同一扩展从 Studio 路径移动到 AI Monitor 路径时，旧系统进程可能继续使用已缓存的旧可执行文件路径。Beta 2 在构建时设置独立扩展 ID，固定安装目录，并拒绝将旧扩展打入新包。问题的系统日志证据与真实桌面回归结果见 [黑屏修复报告](docs/ai-monitor/BLACK-SCREEN-FIX.md)。

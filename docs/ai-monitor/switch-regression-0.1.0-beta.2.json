@@ -1,0 +1,482 @@
+[
+  {
+    "phase": "large-sequential-1",
+    "index": 1,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 663,
+    "time": "2026-11-15T07:04:51.406Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 2,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 667,
+    "time": "2026-11-15T07:04:52.073Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 3,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 657,
+    "time": "2026-11-15T07:04:52.730Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 4,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 759,
+    "time": "2026-11-15T07:04:53.489Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 5,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 658,
+    "time": "2026-11-15T07:04:54.147Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 6,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:04:54.822Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 7,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 676,
+    "time": "2026-11-15T07:04:55.498Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 8,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 657,
+    "time": "2026-11-15T07:04:56.155Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 9,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:04:56.830Z"
+  },
+  {
+    "phase": "large-sequential-1",
+    "index": 10,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 658,
+    "time": "2026-11-15T07:04:57.488Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 1,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 658,
+    "time": "2026-11-15T07:05:07.272Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 2,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 751,
+    "time": "2026-11-15T07:05:08.023Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 3,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 674,
+    "time": "2026-11-15T07:05:08.697Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 4,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 775,
+    "time": "2026-11-15T07:05:09.472Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 5,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 667,
+    "time": "2026-11-15T07:05:10.139Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 6,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 682,
+    "time": "2026-11-15T07:05:10.821Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 7,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 651,
+    "time": "2026-11-15T07:05:11.472Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 8,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 650,
+    "time": "2026-11-15T07:05:12.122Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 9,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 661,
+    "time": "2026-11-15T07:05:12.784Z"
+  },
+  {
+    "phase": "large-sequential-2",
+    "index": 10,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 663,
+    "time": "2026-11-15T07:05:13.447Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 1,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:05:35.805Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 2,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 658,
+    "time": "2026-11-15T07:05:36.463Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 3,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:05:37.138Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 4,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 658,
+    "time": "2026-11-15T07:05:37.796Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 5,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 667,
+    "time": "2026-11-15T07:05:38.463Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 6,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 650,
+    "time": "2026-11-15T07:05:39.113Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 7,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 667,
+    "time": "2026-11-15T07:05:39.780Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 8,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 659,
+    "time": "2026-11-15T07:05:40.439Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 9,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 674,
+    "time": "2026-11-15T07:05:41.113Z"
+  },
+  {
+    "phase": "host-app-quit",
+    "index": 10,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 758,
+    "time": "2026-11-15T07:05:41.871Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 1,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 667,
+    "time": "2026-11-15T07:05:55.471Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 2,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 759,
+    "time": "2026-11-15T07:05:56.230Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 3,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 567,
+    "time": "2026-11-15T07:05:56.797Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 4,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 1174,
+    "time": "2026-11-15T07:05:57.971Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 5,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 659,
+    "time": "2026-11-15T07:05:58.630Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 6,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:05:59.305Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 7,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 674,
+    "time": "2026-11-15T07:05:59.979Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 8,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 692,
+    "time": "2026-11-15T07:06:00.671Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 9,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:06:01.346Z"
+  },
+  {
+    "phase": "host-app-relaunched",
+    "index": 10,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 659,
+    "time": "2026-11-15T07:06:02.005Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 1,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 891,
+    "time": "2026-11-15T07:06:19.646Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 2,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 674,
+    "time": "2026-11-15T07:06:20.320Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 3,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 660,
+    "time": "2026-11-15T07:06:20.980Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 4,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 682,
+    "time": "2026-11-15T07:06:21.662Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 5,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 684,
+    "time": "2026-11-15T07:06:22.346Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 6,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 666,
+    "time": "2026-11-15T07:06:23.012Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 7,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 668,
+    "time": "2026-11-15T07:06:23.680Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 8,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 691,
+    "time": "2026-11-15T07:06:24.371Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 9,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 658,
+    "time": "2026-11-15T07:06:25.029Z"
+  },
+  {
+    "phase": "extension-cold-relaunch",
+    "index": 10,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:06:25.704Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 1,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 666,
+    "time": "2026-11-15T07:07:33.428Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 2,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 859,
+    "time": "2026-11-15T07:07:34.287Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 3,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 666,
+    "time": "2026-11-15T07:07:34.953Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 4,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 650,
+    "time": "2026-11-15T07:07:35.603Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 5,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 683,
+    "time": "2026-11-15T07:07:36.286Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 6,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 691,
+    "time": "2026-11-15T07:07:36.977Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 7,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 676,
+    "time": "2026-11-15T07:07:37.653Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 8,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 675,
+    "time": "2026-11-15T07:07:38.328Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 9,
+    "provider": "Codex",
+    "passed": true,
+    "elapsedMs": 692,
+    "time": "2026-11-15T07:07:39.020Z"
+  },
+  {
+    "phase": "same-path-reinstall",
+    "index": 10,
+    "provider": "Claude",
+    "passed": true,
+    "elapsedMs": 657,
+    "time": "2026-11-15T07:07:39.677Z"
+  }
+]

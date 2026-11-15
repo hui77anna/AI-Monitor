@@ -287,7 +287,12 @@ if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   FEED_URL=""
   AUTO_CHECKS=false
 fi
-WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
+WIDGET_BUNDLE_ID="${CODEXBAR_WIDGET_BUNDLE_ID_OVERRIDE:-${BUNDLE_ID}.widget}"
+# A renamed community app must not reuse an already bootstrapped extension path.
+if [[ "$WIDGET_BUNDLE_ID" != "$BUNDLE_ID".* || "$WIDGET_BUNDLE_ID" == *[!a-zA-Z0-9.-]* ]]; then
+  echo "ERROR: Widget bundle ID must be a valid child of the application bundle ID." >&2
+  exit 1
+fi
 resolve_package_signing_identity
 APP_GROUP_ID="${APP_TEAM_ID}.${BUNDLE_ID}"
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
