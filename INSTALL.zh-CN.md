@@ -85,3 +85,12 @@ Claude 自动来源没有数据时，可在来源设置中选择 **CLI**，通�
 当前通过 [Releases](https://github.com/hui77anna/AI-Monitor/releases) 手动更新。退出应用后替换“应用程序”中的安装包，再重新打开；不要同时运行原版、Studio 和本定制版。
 
 遇到问题请在 [Issues](https://github.com/hui77anna/AI-Monitor/issues) 提供：macOS 版本、芯片类型、应用版本、所选提供方与来源、复现步骤及已遮盖账户信息的截图。请勿上传令牌、Cookie、钥匙串内容或原始账户配置。
+
+
+### 升级后左侧仍显示 CodexBar Studio
+
+Beta 3（Build 184）的应用与组件显示名称均为 AI Monitor。旧开发版与新版共用主应用标识，macOS 可能继续使用旧副本的登记信息或组件库进程缓存。
+
+请仅保留“应用程序”目录中的正式安装版本，退出旧开发版，关闭组件库后重新登录 macOS，再打开组件库。开发者还需取消旧构建副本的 Launch Services 登记，然后重新登记 `/Applications/AI Monitor.app`；不要修改 Bundle ID 或删除账户配置来处理显示名称。
+
+本机已取消旧开发副本登记并刷新 NotificationCenter / chronod 进程，用户确认左侧名称恢复正确。此步骤是旧安装环境的缓存清理，不涉及额度读取逻辑，也无需更换 Beta 3 安装包。
