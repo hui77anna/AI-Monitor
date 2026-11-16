@@ -1,13 +1,15 @@
-# 截图与示例数据
+# AI Monitor 截图与示例数据
+
+当前首页图片于 2026-11-16 使用 Beta 3 / Build 184 对应组件源码生成。卡片内 Codex、Claude 为提供方名称，产品名称统一为 AI Monitor。使用新文件名，避免旧图片缓存。
 
 首页图片由本项目当前 SwiftUI 视图通过 `ImageRenderer` 直接生成，使用测试中显式定义的合成数据。图片用于展示已实现的布局，不是账户连接或实时刷新成功的证明。
 
 | 文件 | 内容 |
 | --- | --- |
-| `codex-large-sample.png` | Codex 大号额度与七日用量 |
-| `claude-large-sample.png` | Claude 大号额度与七日用量 |
-| `claude-medium-sample.png` | Claude 中号额度 |
-| `mac-status-sample.png` | Mac 状态中号卡片 |
+| `ai-monitor-beta3-codex-large.png` | Codex 大号额度与七日用量 |
+| `ai-monitor-beta3-claude-large.png` | Claude 大号额度与七日用量 |
+| `ai-monitor-beta3-claude-medium.png` | Claude 中号额度 |
+| `ai-monitor-beta3-mac-status.png` | Mac 状态中号卡片 |
 
 生成入口：[StudioWidgetRenderTests.swift](../../Tests/CodexBarTests/StudioWidgetRenderTests.swift)。测试用例名称保留原 Studio 名称以便追踪代码历史。
 

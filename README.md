@@ -28,24 +28,24 @@
 
 <table>
 <tr>
-<td width="50%" align="center"><strong>Codex · 额度与七日用量</strong></td>
-<td width="50%" align="center"><strong>Claude · 额度与七日用量</strong></td>
+<td width="50%" align="center"><strong>AI Monitor · Codex · 额度与七日用量</strong></td>
+<td width="50%" align="center"><strong>AI Monitor · Claude · 额度与七日用量</strong></td>
 </tr>
 <tr>
-<td><img src="docs/ai-monitor/codex-large-sample.png" alt="Codex 大号卡片：分段额度条、重置时间与紫色七日用量图" width="100%"></td>
-<td><img src="docs/ai-monitor/claude-large-sample.png" alt="Claude 大号卡片：橙色额度条与七日用量图" width="100%"></td>
+<td><img src="docs/ai-monitor/ai-monitor-beta3-codex-large.png" alt="Codex 大号卡片：分段额度条、重置时间与紫色七日用量图" width="100%"></td>
+<td><img src="docs/ai-monitor/ai-monitor-beta3-claude-large.png" alt="Claude 大号卡片：橙色额度条与七日用量图" width="100%"></td>
 </tr>
 <tr>
-<td align="center"><strong>Mac 状态 · CPU / 内存 / 存储</strong></td>
-<td align="center"><strong>紧凑布局 · Claude 中号卡片</strong></td>
+<td align="center"><strong>AI Monitor · Mac 状态 · CPU / 内存 / 存储</strong></td>
+<td align="center"><strong>AI Monitor · 紧凑布局 · Claude 中号卡片</strong></td>
 </tr>
 <tr>
-<td><img src="docs/ai-monitor/mac-status-sample.png" alt="Mac 状态中号卡片：CPU、内存占用、可用存储" width="100%"></td>
-<td><img src="docs/ai-monitor/claude-medium-sample.png" alt="Claude 中号卡片：五小时与每周额度" width="100%"></td>
+<td><img src="docs/ai-monitor/ai-monitor-beta3-mac-status.png" alt="Mac 状态中号卡片：CPU、内存占用、可用存储" width="100%"></td>
+<td><img src="docs/ai-monitor/ai-monitor-beta3-claude-medium.png" alt="Claude 中号卡片：五小时与每周额度" width="100%"></td>
 </tr>
 </table>
 
-<sub>以上图片由当前 SwiftUI 组件代码直接渲染，使用明确的示例数据展示布局，不是设计稿，也不是任何用户的实际额度。实际显示内容取决于账户、数据来源和系统配色。[截图生成方式](docs/ai-monitor/SCREENSHOTS.md)</sub>
+<sub>以上图片于 2026-11-16 从 Beta 3（Build 184）对应的 SwiftUI 组件代码重新渲染，使用明确的示例数据展示布局，不是设计稿，也不是任何用户的实际额度。实际显示内容取决于账户、数据来源和系统配色。[截图生成方式](docs/ai-monitor/SCREENSHOTS.md)</sub>
 
 ## 为日常使用设计
 
