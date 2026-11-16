@@ -489,6 +489,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         MenuBarStatusItemWindowProbe.trace("did-finish-launching")
+        LiveMacCardController.shared.start()
         WidgetExtensionRecovery.launch(reload: UsageStore.reloadWidgetTimelines)
         self.dockIconController.start()
         self.memoryPressureMonitor.start()
@@ -560,6 +561,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        LiveMacCardController.shared.stop()
         self.cloudSyncCoordinator?.stop()
         self.memoryPressureMonitor.stop()
         #if DEBUG

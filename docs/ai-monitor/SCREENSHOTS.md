@@ -23,3 +23,5 @@ swift test --filter StudioWidgetRenderTests
 不公开实际账户截图，避免在项目介绍中带出用户身份和使用记录。
 
 Mac 状态截图已更新为 Beta 5 / Build 186，包含内存、Swap、压力等级及磁盘总容量。其余卡片外观未改动。
+
+Beta 6 首页 Mac 图片改为 `ai-monitor-live-mac.png`，由 `LiveMacCardTests` 使用实时悬浮卡片视图及合成数据渲染；其余额度卡片未改动。

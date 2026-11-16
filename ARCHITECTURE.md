@@ -109,3 +109,12 @@ UI 改版不改变平台数据口径，也不能消除上游缓存与系统调�
 ## 8. 安装身份与黑屏回归
 
 扩展启动服务以 Bundle ID 识别组件。将同一扩展从 Studio 路径移动到 AI Monitor 路径时，旧系统进程可能继续使用已缓存的旧可执行文件路径。Beta 2 在构建时设置独立扩展 ID，固定安装目录，并拒绝将旧扩展打入新包。问题的系统日志证据与真实桌面回归结果见 [黑屏修复报告](docs/ai-monitor/BLACK-SCREEN-FIX.md)。
+
+
+## 实时桌面卡片（Beta 6）
+
+`LiveMacCardController` 在主应用中管理无边框 NSPanel；`LiveMacSampler` 使用主运行循环上的 1 秒 Timer，读取 Mach CPU tick 差分、VM 内存统计、Swap 和系统压力等级。没有 sleep 阻塞采样；CPU 保留最多 30 点，磁盘读数缓存 30 秒。Swift Observation 将结果推送至 SwiftUI 卡片。
+
+这是独立于 WidgetKit 的桌面窗口。休眠通知停止 Timer，唤醒时重置 CPU 基线并恢复，退出时清理观察者与 Timer。窗口采用桌面层级并保存位置；显示器变化导致位置完全离屏时，启动会移回主屏。1 秒为目标间隔，系统繁忙时可能有调度延迟，不是硬实时保证。
+
+该卡片只读取本机系统指标，不读取账户凭据、不请求 AI 平台接口。与原有 WidgetKit 卡片并存以兼容旧布局。

@@ -2,7 +2,7 @@
 
 从下载到桌面添加组件，通常只需完成安装、账户连接和组件配置三个步骤。
 
-[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.5/AI-Monitor-0.1.0-beta.5-macos-arm64.dmg)
+[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.6/AI-Monitor-0.1.0-beta.6-macos-arm64.dmg)
 
 ## 使用条件
 
@@ -11,7 +11,7 @@
 | 系统 | macOS 14 或更高版本 |
 | 芯片 | Apple Silicon；当前安装包不支持 Intel |
 | AI 数据 | 你自己的、受所选来源支持的已登录账户 |
-| 发布阶段 | 0.1.0-beta.5，开发签名测试版，尚未公证或异机验收 |
+| 发布阶段 | 0.1.0-beta.6，开发签名测试版，尚未公证或异机验收 |
 
 ## 从 CodexBar Studio / Beta 1 升级
 
@@ -23,7 +23,7 @@ Beta 3 为组件分配了新的扩展标识，避免沿用旧安装路径的系�
 
 ## 1. 安装应用
 
-在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.5) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.5-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
+在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.6) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.6-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
 
 打开 DMG，将 **AI Monitor.app** 拖入 **Applications（应用程序）**。如果正在运行 CodexBar Studio，先将其退出，然后从“应用程序”打开 AI Monitor。
 
@@ -94,3 +94,10 @@ Beta 3（Build 184）的应用与组件显示名称均为 AI Monitor。旧开发
 请仅保留“应用程序”目录中的正式安装版本，退出旧开发版，关闭组件库后重新登录 macOS，再打开组件库。开发者还需取消旧构建副本的 Launch Services 登记，然后重新登记 `/Applications/AI Monitor.app`；不要修改 Bundle ID 或删除账户配置来处理显示名称。
 
 本机已取消旧开发副本登记并刷新 NotificationCenter / chronod 进程，用户确认左侧名称恢复正确。此步骤是旧安装环境的缓存清理，不涉及额度读取逻辑，也无需更换 Beta 3 安装包。
+
+
+## Beta 6：实时 Mac 悬浮卡片
+
+启动 AI Monitor 后会自动显示 Mac 状态悬浮卡片，拖动背景可调整位置，重启应用会恢复位置。CPU、内存与 Swap 约每秒采样，磁盘每 30 秒读取；CPU 曲线表示最近 30 次采样。系统休眠时停止，唤醒后恢复。应用退出时卡片消失。卡片处于桌面层，不强制覆盖其他应用窗口。
+
+旧“Mac 状态”WidgetKit 小组件仍保留兼容，但不具有秒级更新；可右键移除旧卡片，保留新的实时卡片。Codex / Claude 额度仍受平台和 WidgetKit 调度限制。
