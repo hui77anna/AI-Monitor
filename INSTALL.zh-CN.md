@@ -2,7 +2,7 @@
 
 从下载到桌面添加组件，通常只需完成安装、账户连接和组件配置三个步骤。
 
-[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.2/AI-Monitor-0.1.0-beta.2-macos-arm64.dmg)
+[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.3/AI-Monitor-0.1.0-beta.3-macos-arm64.dmg)
 
 ## 使用条件
 
@@ -11,11 +11,11 @@
 | 系统 | macOS 14 或更高版本 |
 | 芯片 | Apple Silicon；当前安装包不支持 Intel |
 | AI 数据 | 你自己的、受所选来源支持的已登录账户 |
-| 发布阶段 | 0.1.0-beta.2，开发签名测试版，尚未公证或异机验收 |
+| 发布阶段 | 0.1.0-beta.3，开发签名测试版，尚未公证或异机验收 |
 
 ## 从 CodexBar Studio / Beta 1 升级
 
-Beta 2 为组件分配了新的扩展标识，避免沿用旧安装路径的系统启动记录。退出旧应用，将新版放到固定路径 `/Applications/AI Monitor.app`，**移除旧桌面卡片，再从 AI Monitor 组件库重新添加一次**。账户配置路径保持兼容，不需要将凭据交给维护者。
+Beta 3 为组件分配了新的扩展标识，避免沿用旧安装路径的系统启动记录。退出旧应用，将新版放到固定路径 `/Applications/AI Monitor.app`，**移除旧桌面卡片，再从 AI Monitor 组件库重新添加一次**。账户配置路径保持兼容，不需要将凭据交给维护者。
 
 以后请保持应用名称与安装路径不变，在同一路径更新。不要在组件运行期间直接改名应用或从 DMG 内长期运行。
 
@@ -23,7 +23,7 @@ Beta 2 为组件分配了新的扩展标识，避免沿用旧安装路径的系�
 
 ## 1. 安装应用
 
-在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.2) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.2-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
+在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.3) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.3-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
 
 打开 DMG，将 **AI Monitor.app** 拖入 **Applications（应用程序）**。如果正在运行 CodexBar Studio，先将其退出，然后从“应用程序”打开 AI Monitor。
 
