@@ -100,7 +100,10 @@ struct ClaudeCLIUsageSpawnThrottleTests {
             try await ClaudeCLIUsageSpawnThrottle.withNowOverrideForTesting(clock.now) {
                 try await ClaudeStatusProbe.$fetchOverride.withValue(self.successfulFetchOverride(attempts: attempts)) {
                     let first = try await self.fetch(strategy, context: context, interaction: .background)
-                    clock.advance(by: ClaudeCLIUsageSpawnThrottle.minimumBackgroundSpawnInterval + 1)
+                    clock.advance(by: 299)
+                    _ = try await self.fetch(strategy, context: context, interaction: .background)
+                    #expect(await attempts.snapshot() == 1)
+                    clock.advance(by: 1)
                     let second = try await self.fetch(strategy, context: context, interaction: .background)
 
                     #expect(await attempts.snapshot() == 2)
@@ -204,7 +207,7 @@ struct ClaudeCLIUsageSpawnThrottleTests {
     func `a session reset boundary invalidates the cached CLI result before the spawn floor elapses`() async {
         let start = Date(timeIntervalSince1970: 1_000_000)
         let clock = TestClock(start)
-        // The cached session window resets two minutes out — well inside the 15-minute spawn floor.
+        // The cached session window resets two minutes out — well inside the 5-minute spawn floor.
         let result = Self.makeFetchResult(sessionResetsAt: start.addingTimeInterval(2 * 60))
         let key = ClaudeCLIUsageSpawnThrottle.Key(
             binary: "/bin/echo",

@@ -82,7 +82,7 @@ Mac 状态由组件自身读取本机指标，不经过 AI 提供方，也不依
 
 完整链路为：**来源更新 → 主程序取数 → 写入快照 → WidgetKit 展示**。任一环节都可能引入延迟。
 
-- **提供方层**：不同来源有自己的缓存、会话与限流规则。Claude CLI 后台路径在 [`ClaudeCLIUsageSpawnThrottle.swift`](Sources/CodexBarCore/Providers/Claude/ClaudeCLIUsageSpawnThrottle.swift) 中设定 15 分钟最小启动间隔，不能简单理解为所有 Claude 来源都固定 15 分钟刷新。
+- **提供方层**：不同来源有自己的缓存、会话与限流规则。Claude CLI 后台路径在 [`ClaudeCLIUsageSpawnThrottle.swift`](Sources/CodexBarCore/Providers/Claude/ClaudeCLIUsageSpawnThrottle.swift) 中设定 5 分钟最小启动间隔，不能简单理解为所有 Claude 来源都固定 5 分钟刷新。
 - **主程序层**：按上游设置执行轮询，成功获取后发布状态。此前在本机 CLI 路径验证过后台自动更新；该结果不构成所有账户的刷新 SLA。
 - **系统层**：WidgetKit 决定时间线实际执行与展示时机。应用请求重载不等于系统立即绘制。
 - **Mac 状态**：请求下次采样时间为本次采样后 300 秒，系统可延后，页面因此标注“定时更新 · 以上次采样为准”。

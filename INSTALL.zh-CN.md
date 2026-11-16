@@ -2,7 +2,7 @@
 
 从下载到桌面添加组件，通常只需完成安装、账户连接和组件配置三个步骤。
 
-[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.7/AI-Monitor-0.1.0-beta.7-macos-arm64.dmg)
+[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.8/AI-Monitor-0.1.0-beta.8-macos-arm64.dmg)
 
 ## 使用条件
 
@@ -11,7 +11,7 @@
 | 系统 | macOS 14 或更高版本 |
 | 芯片 | Apple Silicon；当前安装包不支持 Intel |
 | AI 数据 | 你自己的、受所选来源支持的已登录账户 |
-| 发布阶段 | 0.1.0-beta.7，开发签名测试版，尚未公证或异机验收 |
+| 发布阶段 | 0.1.0-beta.8，开发签名测试版，尚未公证或异机验收 |
 
 ## 从 CodexBar Studio / Beta 1 升级
 
@@ -23,7 +23,7 @@ Beta 3 为组件分配了新的扩展标识，避免沿用旧安装路径的系�
 
 ## 1. 安装应用
 
-在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.7) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.7-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
+在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.8) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.8-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
 
 打开 DMG，将 **AI Monitor.app** 拖入 **Applications（应用程序）**。如果正在运行 CodexBar Studio，先将其退出，然后从“应用程序”打开 AI Monitor。
 
@@ -75,7 +75,7 @@ Claude 自动来源没有数据时，可在来源设置中选择 **CLI**，通�
 | 小组件库暂时搜不到 | 确认应用位于“应用程序”并已运行，再关闭并重新打开小组件库。 |
 | 菜单栏有额度，桌面仍是旧值 | 检查更新时间，给 WidgetKit 留出调度时间；系统不保证即时刷新。 |
 | 菜单栏和桌面均无额度 | 先确认对应 CLI 正常登录，再检查提供方是否启用、来源是否适用。 |
-| Claude 数字长时间未变化 | CLI 后台来源有至少 15 分钟间隔，再叠加轮询与系统展示延迟；同时检查登录状态。 |
+| Claude 数字长时间未变化 | CLI 后台来源有至少 5 分钟间隔，再叠加轮询与系统展示延迟；同时检查登录状态。 |
 | 柱状图缺少某天 | 缺失记录保留为空，不会擅自填为零。 |
 | 卡片变成灰色 | 检查系统小组件颜色、桌面状态与染色设置。 |
 | 看到旧 CodexBar Studio | 退出旧版，保留一个应用副本；从 beta.1 / Studio 升级后，移除旧卡片并从 AI Monitor 重新添加。 |

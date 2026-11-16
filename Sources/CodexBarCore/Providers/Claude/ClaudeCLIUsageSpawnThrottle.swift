@@ -17,9 +17,9 @@ enum ClaudeCLIUsageSpawnThrottle {
         let recordedAt: Date
     }
 
-    /// Matches the repo's existing 15-minute floor precedent for expensive local work
-    /// (`UsageStore.minimumTokenFetchTTL`).
-    static let minimumBackgroundSpawnInterval: TimeInterval = 15 * 60
+    /// AI Monitor checks usage every five minutes; retain a bounded cache between checks.
+    /// Local token history has its own independent refresh policy.
+    static let minimumBackgroundSpawnInterval: TimeInterval = 5 * 60
 
     final class Store: @unchecked Sendable {
         private let lock = NSLock()

@@ -9,20 +9,20 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14%2B-20232a?style=flat-square&logo=apple&logoColor=white)](INSTALL.zh-CN.md)
 [![Architecture](https://img.shields.io/badge/芯片-Apple%20Silicon-6256c7?style=flat-square)](INSTALL.zh-CN.md)
-[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%207-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.7)
+[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%208-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.8)
 [![License](https://img.shields.io/badge/License-MIT-337f76?style=flat-square)](LICENSE)
 
-**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.7/AI-Monitor-0.1.0-beta.7-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
+**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.8/AI-Monitor-0.1.0-beta.8-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
 
 基于 [CodexBar](https://github.com/steipete/CodexBar) 的社区 UI 定制项目 · SwiftUI / WidgetKit 原生组件
 
 </div>
 
-> **Beta 7 · Build 188**：修复升级后 Codex / Claude 左右切换无响应。升级恢复现在识别 AI Monitor 的独立扩展标识，自动清理旧版本扩展进程。升级及重启后共 30 次切换验证通过；保留 Beta 6 的实时 Mac 悬浮卡片。[根因与回归记录](docs/ai-monitor/SWITCH-UPGRADE-FIX.md)
+> **Beta 8 · Build 189**：Claude Code 后台额度缓存由 15 分钟缩短为 5 分钟。设置中选择“每 5 分钟”刷新即可；桌面显示仍可能因系统调度延后。本地 Token 历史统计保持独立周期。保留左右切换修复和 Mac 实时悬浮卡片。
 
 ## 桌面预览
 
-**当前下载版本：AI Monitor Beta 7（Build 188）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.7/AI-Monitor-0.1.0-beta.7-macos-arm64.dmg)
+**当前下载版本：AI Monitor Beta 8（Build 189）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.8/AI-Monitor-0.1.0-beta.8-macos-arm64.dmg)
 
 安装后在“编辑小组件”左侧选择 **AI Monitor**。旧 Studio 用户若仍看到旧名称，请参阅[名称缓存处理说明](INSTALL.zh-CN.md#升级后左侧仍显示-codexbar-studio)。
 
@@ -82,7 +82,7 @@ flowchart LR
     G["WidgetKit 系统调度"] -. "控制实际展示时机" .-> D
 ```
 
-**准确性与更新速度是两件事。** 本定制版不重新估算平台额度；数据是否完整取决于来源，何时显示取决于取数缓存、刷新周期与系统调度。Claude CLI 后台路径有 15 分钟最小间隔；Mac 实时悬浮卡片的 CPU / 内存约每秒采样、磁盘每 30 秒读取；旧原生 Mac 小组件仍约每 5 分钟请求更新。AI 额度不代表秒级实时。
+**准确性与更新速度是两件事。** 本定制版不重新估算平台额度；数据是否完整取决于来源，何时显示取决于取数缓存、刷新周期与系统调度。Claude CLI 后台路径有 5 分钟最小间隔；Mac 实时悬浮卡片的 CPU / 内存约每秒采样、磁盘每 30 秒读取；旧原生 Mac 小组件仍约每 5 分钟请求更新。AI 额度不代表秒级实时。
 
 [阅读架构、数据口径与刷新机制 →](ARCHITECTURE.md)
 
@@ -90,10 +90,10 @@ flowchart LR
 
 | 项目 | 当前状态 |
 | --- | --- |
-| 对外版本 | `0.1.0-beta.7` |
-| 应用内部版本 | `0.84.1` / Build `188`，保留上游版本以追踪兼容性 |
+| 对外版本 | `0.1.0-beta.8` |
+| 应用内部版本 | `0.84.1` / Build `189`，保留上游版本以追踪兼容性 |
 | 上游基线 | [steipete/CodexBar · 7447bc7](https://github.com/steipete/CodexBar/commit/7447bc77c2497323d9c41e40164ce705533493c8) |
-| 主要变更 | 桌面卡片 UI、Mac 状态组件、显示名称与打包脚本 |
+| 主要变更 | 桌面卡片 UI、Mac 实时状态、Claude 五分钟额度缓存、显示名称与打包脚本 |
 | 更新方式 | 从本仓库 Releases 手动下载，当前不启用自动更新 |
 | 问题反馈 | [GitHub Issues](https://github.com/hui77anna/AI-Monitor/issues) |
 
