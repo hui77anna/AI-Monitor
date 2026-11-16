@@ -78,22 +78,27 @@ extension EnvironmentValues {
 
 /// Presentation only: native tinted/clear widgets retain the system's color scheme.
 struct StudioWidgetSurface: ViewModifier {
+    var macStatus = false
     @Environment(\.widgetRenderingMode) private var renderingMode
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
         content
             .containerBackground(for: .widget) {
-                StudioWidgetBackground()
+                StudioWidgetBackground(macStatus: self.macStatus)
             }
             .environment(\.colorScheme, self.renderingMode == .fullColor ? .dark : self.colorScheme)
     }
 }
 
 struct StudioWidgetBackground: View {
+    var macStatus = false
     var body: some View {
         LinearGradient(
-            colors: [Color(red: 0.115, green: 0.105, blue: 0.16), Color(red: 0.025, green: 0.025, blue: 0.045)],
+            colors: self.macStatus ? [Color(red: 0.055, green: 0.052, blue: 0.075), .black] : [
+                Color(red: 0.115, green: 0.105, blue: 0.16),
+                Color(red: 0.025, green: 0.025, blue: 0.045),
+            ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing)
     }

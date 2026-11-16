@@ -9,7 +9,7 @@
 | `ai-monitor-beta3-codex-large.png` | Codex 大号额度与七日用量 |
 | `ai-monitor-beta3-claude-large.png` | Claude 大号额度与七日用量 |
 | `ai-monitor-beta3-claude-medium.png` | Claude 中号额度 |
-| `ai-monitor-beta4-mac-status.png` | Mac 状态中号卡片 |
+| `ai-monitor-beta5-mac-status.png` | Mac 状态中号卡片 |
 
 生成入口：[StudioWidgetRenderTests.swift](../../Tests/CodexBarTests/StudioWidgetRenderTests.swift)。测试用例名称保留原 Studio 名称以便追踪代码历史。
 
@@ -22,4 +22,4 @@ swift test --filter StudioWidgetRenderTests
 
 不公开实际账户截图，避免在项目介绍中带出用户身份和使用记录。
 
-Mac 状态截图已更新为 Beta 4 / Build 185，包含内存、Swap、压力等级及磁盘总容量。其余卡片外观未改动。
+Mac 状态截图已更新为 Beta 5 / Build 186，包含内存、Swap、压力等级及磁盘总容量。其余卡片外观未改动。

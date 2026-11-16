@@ -40,7 +40,7 @@ struct StudioWidgetRenderTests {
         guard let directory = ProcessInfo.processInfo.environment["CODEXBAR_WIDGET_PROOF_DIR"] else { return }
         let view = StudioMacStatusView(entry: StudioMacStatusEntry(
             date: Date(),
-            cpuSamples: [43, 35, 39, 24, 28, 19, 25, 23],
+            cpuSamples: [43, 35, 39, 24, 28, 19, 25, 43],
             memoryPercent: 48,
             availableGB: 213,
             diskUsedPercent: 58,
@@ -50,7 +50,7 @@ struct StudioWidgetRenderTests {
             diskTotalGB: 494))
             .environment(\.colorScheme, .dark)
             .padding(14).frame(width: 329, height: 155)
-            .background(StudioWidgetBackground())
+            .background(StudioWidgetBackground(macStatus: true))
             .clipShape(RoundedRectangle(cornerRadius: 22))
         let renderer = ImageRenderer(content: view)
         renderer.scale = 2
