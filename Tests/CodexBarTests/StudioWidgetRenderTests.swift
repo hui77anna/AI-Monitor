@@ -43,7 +43,11 @@ struct StudioWidgetRenderTests {
             cpuSamples: [43, 35, 39, 24, 28, 19, 25, 23],
             memoryPercent: 48,
             availableGB: 213,
-            diskUsedPercent: 58))
+            diskUsedPercent: 58,
+            memoryTotalGB: 16,
+            swapGB: 3,
+            pressureLevel: 1,
+            diskTotalGB: 494))
             .environment(\.colorScheme, .dark)
             .padding(14).frame(width: 329, height: 155)
             .background(StudioWidgetBackground())

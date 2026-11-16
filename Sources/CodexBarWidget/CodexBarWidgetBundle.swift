@@ -1,3 +1,4 @@
+import AppIntents
 import Darwin
 import SwiftUI
 import WidgetKit
@@ -136,6 +137,10 @@ struct StudioMacStatusEntry: TimelineEntry {
     let memoryPercent: Double?
     let availableGB: Double?
     let diskUsedPercent: Double?
+    var memoryTotalGB: Double?
+    var swapGB: Double?
+    var pressureLevel: Int?
+    var diskTotalGB: Double?
 }
 
 struct StudioMacStatusProvider: TimelineProvider {
@@ -196,12 +201,22 @@ struct StudioMacStatusProvider: TimelineProvider {
         let free = (filesystem?[.systemFreeSize] as? NSNumber)?.doubleValue
         let total = (filesystem?[.systemSize] as? NSNumber)?.doubleValue
         let used = free.flatMap { free in total.flatMap { $0 > 0 ? (1 - free / $0) * 100 : nil } }
+        var swap = xsw_usage()
+        var swapSize = MemoryLayout<xsw_usage>.size
+        let swapOK = sysctlbyname("vm.swapusage", &swap, &swapSize, nil, 0) == 0
+        var pressure: Int32 = 0
+        var pressureSize = MemoryLayout<Int32>.size
+        let pressureOK = sysctlbyname("kern.memorystatus_vm_pressure_level", &pressure, &pressureSize, nil, 0) == 0
         return StudioMacStatusEntry(
             date: Date(),
             cpuSamples: samples,
             memoryPercent: memory,
             availableGB: free.map { $0 / 1_000_000_000 },
-            diskUsedPercent: used)
+            diskUsedPercent: used,
+            memoryTotalGB: Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824,
+            swapGB: swapOK ? Double(swap.xsu_used) / 1_073_741_824 : nil,
+            pressureLevel: pressureOK ? Int(pressure) : nil,
+            diskTotalGB: total.map { $0 / 1_000_000_000 })
     }
 }
 
@@ -217,6 +232,10 @@ struct StudioMacStatusView: View {
                     Spacer()
                     Text(self.entry.date, style: .time)
                         .font(.system(size: 9)).foregroundStyle(.secondary)
+                    Button(intent: RefreshMacStatusIntent()) {
+                        Image(systemName: "arrow.clockwise").font(.system(size: 10, weight: .semibold))
+                    }.buttonStyle(.plain).foregroundStyle(.secondary)
+                        .accessibilityLabel(Text(verbatim: "刷新 Mac 状态"))
                 }
                 if geometry.size.width < 200 {
                     self.compactMetric("CPU", value: self.entry.cpuSamples.last, unit: "%", color: .cyan)
@@ -237,24 +256,56 @@ struct StudioMacStatusView: View {
                                         if index == 0 { path.move(to: point) } else { path.addLine(to: point) }
                                     }
                                 }.stroke(.cyan, lineWidth: 1.5)
-                            }.frame(height: 16)
+                            }.frame(height: 26)
+                            Text("定时采样").font(.system(size: 7)).foregroundStyle(.secondary)
                         }
                         Divider()
                         self.metric("内存占用", value: self.entry.memoryPercent, unit: "%", color: .mint) {
                             self.track(self.entry.memoryPercent, color: .mint)
+                            Text(self.memoryDetail).font(.system(size: 7)).foregroundStyle(.secondary)
+                            Text(verbatim: "Swap " + self.number(self.entry.swapGB) + " GB")
+                                .font(.system(size: 7)).foregroundStyle(.secondary)
+                            HStack(spacing: 3) {
+                                Text("压力").font(.system(size: 7)).foregroundStyle(.secondary)
+                                self.pressureIndicator
+                            }
                         }
                         Divider()
-                        self.metric("可用存储", value: self.entry.availableGB, unit: "GB", color: .orange) {
+                        self.metric("存储", value: self.entry.availableGB, unit: "GB", color: .orange) {
                             self.track(self.entry.diskUsedPercent, color: .orange)
+                            Text("可用 · 共 " + self.number(self.entry.diskTotalGB, decimals: 0) + " GB")
+                                .font(.system(size: 7)).foregroundStyle(.secondary)
                         }
                     }
                 }
-                Text("定时更新 · 以上次采样为准")
-                    .font(.system(size: 8)).foregroundStyle(.secondary)
+                if geometry.size.width < 200 {
+                    Text("定时更新 · 以上次采样为准")
+                        .font(.system(size: 8)).foregroundStyle(.secondary)
+                }
                 Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
+    }
+
+    private func number(_ value: Double?, decimals: Int = 1) -> String {
+        value.map { String(format: "%.*f", decimals, $0) } ?? "—"
+    }
+
+    private var memoryDetail: String {
+        let used = self.entry.memoryTotalGB.flatMap { total in self.entry.memoryPercent.map { total * $0 / 100 } }
+        return "已用 " + self.number(used) + " / " + self.number(self.entry.memoryTotalGB, decimals: 0) + " GB"
+    }
+
+    private var pressureIndicator: some View {
+        HStack(spacing: 2) {
+            ForEach(0..<3) { index in
+                Capsule().fill([Color.mint, .orange, .red][index].opacity(
+                    self.entry.pressureLevel.map { level in
+                        index == (level >= 4 ? 2 : level >= 2 ? 1 : 0) ? 1 : 0.18
+                    } ?? 0.12))
+            }
+        }.frame(height: 4).accessibilityLabel("内存压力等级 " + (self.entry.pressureLevel.map(String.init) ?? "未知"))
     }
 
     private func compactMetric(_ title: String, value: Double?, unit: String, color: Color) -> some View {
@@ -273,11 +324,11 @@ struct StudioMacStatusView: View {
         color _: Color,
         @ViewBuilder detail: () -> some View) -> some View
     {
-        VStack(alignment: .leading, spacing: 7) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.system(size: 9)).foregroundStyle(.secondary)
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(value.map { String(format: "%.0f", $0) } ?? "—")
-                    .font(.system(size: 23, weight: .semibold, design: .rounded))
+                    .font(.system(size: 26, weight: .semibold, design: .rounded))
                 Text(unit).font(.system(size: unit == "GB" ? 11 : 17, weight: .medium))
             }.lineLimit(1).minimumScaleFactor(0.7)
             detail()
@@ -290,7 +341,7 @@ struct StudioMacStatusView: View {
                 .overlay(alignment: .leading) {
                     Capsule().fill(color).frame(width: geometry.size.width * min(1, max(0, (percent ?? 0) / 100)))
                 }
-        }.frame(height: 4).padding(.top, 5)
+        }.frame(height: 4)
     }
 }
 
@@ -302,5 +353,15 @@ struct StudioMacStatusWidget: Widget {
         .configurationDisplayName("Mac 状态")
         .description("本机 CPU、内存和存储。系统定期采样，不是实时监控。")
         .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+struct RefreshMacStatusIntent: AppIntent {
+    static let title: LocalizedStringResource = "刷新 Mac 状态"
+    static let openAppWhenRun: Bool = false
+
+    func perform() async throws -> some IntentResult {
+        WidgetCenter.shared.reloadTimelines(ofKind: "StudioMacStatusWidget")
+        return .result()
     }
 }

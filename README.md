@@ -9,20 +9,20 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14%2B-20232a?style=flat-square&logo=apple&logoColor=white)](INSTALL.zh-CN.md)
 [![Architecture](https://img.shields.io/badge/芯片-Apple%20Silicon-6256c7?style=flat-square)](INSTALL.zh-CN.md)
-[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%203-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.3)
+[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%204-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.4)
 [![License](https://img.shields.io/badge/License-MIT-337f76?style=flat-square)](LICENSE)
 
-**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.3/AI-Monitor-0.1.0-beta.3-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
+**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.4/AI-Monitor-0.1.0-beta.4-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
 
 基于 [CodexBar](https://github.com/steipete/CodexBar) 的社区 UI 定制项目 · SwiftUI / WidgetKit 原生组件
 
 </div>
 
-> **Beta 3 · Build 184**：统一应用、组件库名称与提示文字为 **AI Monitor**。延续 Beta 2 的切换黑屏修复；60 次桌面切换回归记录来自 Beta 2。[下载最新版](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.3) · [根因与测试记录](docs/ai-monitor/BLACK-SCREEN-FIX.md)
+> **Beta 4 · Build 185**：Mac 状态新增内存用量、Swap、压力等级、磁盘总容量和刷新入口，按参考图调整三栏布局。此前版本已统一应用、组件库名称与提示文字为 **AI Monitor**。延续 Beta 2 的切换黑屏修复；60 次桌面切换回归记录来自 Beta 2。[下载最新版](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.4) · [根因与测试记录](docs/ai-monitor/BLACK-SCREEN-FIX.md)
 
 ## 桌面预览
 
-**当前下载版本：AI Monitor Beta 3（Build 184）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.3/AI-Monitor-0.1.0-beta.3-macos-arm64.dmg)
+**当前下载版本：AI Monitor Beta 4（Build 185）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.4/AI-Monitor-0.1.0-beta.4-macos-arm64.dmg)
 
 安装后在“编辑小组件”左侧选择 **AI Monitor**。旧 Studio 用户若仍看到旧名称，请参阅[名称缓存处理说明](INSTALL.zh-CN.md#升级后左侧仍显示-codexbar-studio)。
 
@@ -40,12 +40,12 @@
 <td align="center"><strong>AI Monitor · 紧凑布局 · Claude 中号卡片</strong></td>
 </tr>
 <tr>
-<td><img src="docs/ai-monitor/ai-monitor-beta3-mac-status.png" alt="Mac 状态中号卡片：CPU、内存占用、可用存储" width="100%"></td>
+<td><img src="docs/ai-monitor/ai-monitor-beta4-mac-status.png" alt="Mac 状态中号卡片：CPU、内存占用、可用存储" width="100%"></td>
 <td><img src="docs/ai-monitor/ai-monitor-beta3-claude-medium.png" alt="Claude 中号卡片：五小时与每周额度" width="100%"></td>
 </tr>
 </table>
 
-<sub>以上图片于 2026-11-16 从 Beta 3（Build 184）对应的 SwiftUI 组件代码重新渲染，使用明确的示例数据展示布局，不是设计稿，也不是任何用户的实际额度。实际显示内容取决于账户、数据来源和系统配色。[截图生成方式](docs/ai-monitor/SCREENSHOTS.md)</sub>
+<sub>以上图片于 2026-11-16 从实际 SwiftUI 组件代码渲染：额度卡片对应 Beta 3，Mac 状态对应 Beta 4；Beta 4 未改动额度卡片，使用明确的示例数据展示布局，不是设计稿，也不是任何用户的实际额度。实际显示内容取决于账户、数据来源和系统配色。[截图生成方式](docs/ai-monitor/SCREENSHOTS.md)</sub>
 
 ## 为日常使用设计
 
@@ -90,8 +90,8 @@ flowchart LR
 
 | 项目 | 当前状态 |
 | --- | --- |
-| 对外版本 | `0.1.0-beta.3` |
-| 应用内部版本 | `0.84.1` / Build `184`，保留上游版本以追踪兼容性 |
+| 对外版本 | `0.1.0-beta.4` |
+| 应用内部版本 | `0.84.1` / Build `185`，保留上游版本以追踪兼容性 |
 | 上游基线 | [steipete/CodexBar · 7447bc7](https://github.com/steipete/CodexBar/commit/7447bc77c2497323d9c41e40164ce705533493c8) |
 | 主要变更 | 桌面卡片 UI、Mac 状态组件、显示名称与打包脚本 |
 | 更新方式 | 从本仓库 Releases 手动下载，当前不启用自动更新 |
