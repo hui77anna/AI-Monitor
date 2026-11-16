@@ -27,6 +27,7 @@ ditto "$ROOT/CodexBar.app" "$APP"
 /usr/libexec/PlistBuddy -c 'Set :SUEnableAutomaticChecks false' "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :SUAutomaticallyUpdate false' "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleDisplayName AI Monitor' "$APP/Contents/PlugIns/CodexBarWidget.appex/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c 'Set :CFBundleName AI Monitor' "$APP/Contents/PlugIns/CodexBarWidget.appex/Contents/Info.plist"
 codesign --force --sign "$AI_MONITOR_SIGNING_IDENTITY" \
   --entitlements "$ROOT/.build/entitlements/CodexBarWidget.entitlements" \
   "$APP/Contents/PlugIns/CodexBarWidget.appex"

@@ -53,6 +53,7 @@ func W(_ key: String, _ arguments: CVarArg...) -> String {
     {
         value = english.localizedString(forKey: key, value: nil, table: nil)
     }
+    value = value.replacingOccurrences(of: "CodexBar", with: "AI Monitor")
     let language = bundle.bundleURL.deletingPathExtension().lastPathComponent
     let locale = bundle.bundleURL.pathExtension == "lproj"
         ? Locale(identifier: language == "ar" ? "ar@numbers=arab" : language)
