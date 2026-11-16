@@ -11,6 +11,10 @@ package enum WidgetExtensionRecovery {
         let executablePath: String
     }
 
+    static func matchesExtensionIdentifier(host: String, embedded: String, signed: String) -> Bool {
+        embedded.hasPrefix(host + ".") && embedded != host && signed == embedded
+    }
+
     static let versionKey = "widgetExtensionLastLaunchedVersion"
 
     // swiftlint:disable:next function_parameter_count
@@ -51,7 +55,9 @@ package enum WidgetExtensionRecovery {
         guard let identifier = bundle.bundleIdentifier,
               let team = bundle.object(forInfoDictionaryKey: "CodexBarTeamID") as? String, !team.isEmpty,
               let url = bundle.builtInPlugInsURL?.appendingPathComponent("CodexBarWidget.appex"),
-              let executable = Bundle(url: url)?.executableURL
+              let embedded = Bundle(url: url),
+              let extensionIdentifier = embedded.bundleIdentifier,
+              let executable = embedded.executableURL
         else {
             CodexBarLog.logger("widget-recovery").info("Post-update widget recovery skipped: unavailable extension")
             return
@@ -63,7 +69,11 @@ package enum WidgetExtensionRecovery {
               SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &info) ==
               errSecSuccess,
               let info = info as? [String: Any],
-              info[kSecCodeInfoIdentifier as String] as? String == identifier + ".widget",
+              let signedIdentifier = info[kSecCodeInfoIdentifier as String] as? String,
+              self.matchesExtensionIdentifier(
+                  host: identifier,
+                  embedded: extensionIdentifier,
+                  signed: signedIdentifier),
               info[kSecCodeInfoTeamIdentifier as String] as? String == team,
               let expected = self.requirement(code)
         else {

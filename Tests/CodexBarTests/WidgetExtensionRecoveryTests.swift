@@ -4,6 +4,19 @@ import Testing
 
 @MainActor
 struct WidgetExtensionRecoveryTests {
+    @Test
+    func `custom widget identity is verified against embedded signed bundle`() {
+        let host = "com.example.monitor"
+        #expect(WidgetExtensionRecovery.matchesExtensionIdentifier(
+            host: host, embedded: host + ".widget", signed: host + ".widget"))
+        #expect(WidgetExtensionRecovery.matchesExtensionIdentifier(
+            host: host, embedded: host + ".aimonitor.widget", signed: host + ".aimonitor.widget"))
+        #expect(!WidgetExtensionRecovery.matchesExtensionIdentifier(
+            host: host, embedded: host + ".aimonitor.widget", signed: host + ".widget"))
+        #expect(!WidgetExtensionRecovery.matchesExtensionIdentifier(
+            host: host, embedded: "com.other.widget", signed: "com.other.widget"))
+    }
+
     private let installedAt = Date(timeIntervalSince1970: 200)
     private let path = "/synthetic/CodexBarWidget.appex/Contents/MacOS/CodexBarWidget"
 

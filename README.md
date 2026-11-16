@@ -9,20 +9,20 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14%2B-20232a?style=flat-square&logo=apple&logoColor=white)](INSTALL.zh-CN.md)
 [![Architecture](https://img.shields.io/badge/芯片-Apple%20Silicon-6256c7?style=flat-square)](INSTALL.zh-CN.md)
-[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%206-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.6)
+[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%207-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.7)
 [![License](https://img.shields.io/badge/License-MIT-337f76?style=flat-square)](LICENSE)
 
-**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.6/AI-Monitor-0.1.0-beta.6-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
+**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.7/AI-Monitor-0.1.0-beta.7-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
 
 基于 [CodexBar](https://github.com/steipete/CodexBar) 的社区 UI 定制项目 · SwiftUI / WidgetKit 原生组件
 
 </div>
 
-> **Beta 6 · Build 187**：Mac 状态新增实时桌面悬浮卡片，CPU / 内存约每秒更新，磁盘每 30 秒更新。启动应用自动显示，可拖动并保存位置；退出应用后消失。Codex / Claude 额度仍通过原生小组件显示。
+> **Beta 7 · Build 188**：修复升级后 Codex / Claude 左右切换无响应。升级恢复现在识别 AI Monitor 的独立扩展标识，自动清理旧版本扩展进程。升级及重启后共 30 次切换验证通过；保留 Beta 6 的实时 Mac 悬浮卡片。[根因与回归记录](docs/ai-monitor/SWITCH-UPGRADE-FIX.md)
 
 ## 桌面预览
 
-**当前下载版本：AI Monitor Beta 6（Build 187）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.6/AI-Monitor-0.1.0-beta.6-macos-arm64.dmg)
+**当前下载版本：AI Monitor Beta 7（Build 188）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.7/AI-Monitor-0.1.0-beta.7-macos-arm64.dmg)
 
 安装后在“编辑小组件”左侧选择 **AI Monitor**。旧 Studio 用户若仍看到旧名称，请参阅[名称缓存处理说明](INSTALL.zh-CN.md#升级后左侧仍显示-codexbar-studio)。
 
@@ -90,8 +90,8 @@ flowchart LR
 
 | 项目 | 当前状态 |
 | --- | --- |
-| 对外版本 | `0.1.0-beta.6` |
-| 应用内部版本 | `0.84.1` / Build `187`，保留上游版本以追踪兼容性 |
+| 对外版本 | `0.1.0-beta.7` |
+| 应用内部版本 | `0.84.1` / Build `188`，保留上游版本以追踪兼容性 |
 | 上游基线 | [steipete/CodexBar · 7447bc7](https://github.com/steipete/CodexBar/commit/7447bc77c2497323d9c41e40164ce705533493c8) |
 | 主要变更 | 桌面卡片 UI、Mac 状态组件、显示名称与打包脚本 |
 | 更新方式 | 从本仓库 Releases 手动下载，当前不启用自动更新 |

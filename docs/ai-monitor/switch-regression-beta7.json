@@ -1,0 +1,152 @@
+[
+  {
+    "index": 1,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 2,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 3,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 4,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 5,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 6,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 7,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 8,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 9,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 10,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 11,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 12,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 13,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 14,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 15,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 16,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 17,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 18,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 19,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 20,
+    "phase": "after_upgrade",
+    "passed": true
+  },
+  {
+    "index": 21,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 22,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 23,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 24,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 25,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 26,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 27,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 28,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 29,
+    "phase": "after_app_restart",
+    "passed": true
+  },
+  {
+    "index": 30,
+    "phase": "after_app_restart",
+    "passed": true
+  }
+]
