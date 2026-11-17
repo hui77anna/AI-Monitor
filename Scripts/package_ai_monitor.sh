@@ -7,9 +7,12 @@ cd "$ROOT"
 : "${APP_TEAM_ID:?Set APP_TEAM_ID to your development signing team}"
 # Stable product identity, distinct from CodexBar Studio's extension service.
 # Keep the host/App Group unchanged so existing account settings remain available.
-WIDGET_ID="com.steipete.codexbar.debug.aimonitor.widget"
+HOST_ID="com.steipete.codexbar.debug"
+WIDGET_ID="$HOST_ID.aimonitor.widget"
 if [[ "${AI_MONITOR_SKIP_BUILD:-0}" != "1" ]]; then
-  CODEXBAR_WIDGET_BUNDLE_ID_OVERRIDE="$WIDGET_ID" CODEXBAR_SIGNING=adhoc ARCHES=arm64 ./Scripts/package_app.sh debug
+  # Optimized Release build; the bundle ID stays on the established AI Monitor identity.
+  CODEXBAR_BUNDLE_ID_OVERRIDE="$HOST_ID" CODEXBAR_WIDGET_BUNDLE_ID_OVERRIDE="$WIDGET_ID" \
+    CODEXBAR_SIGNING=adhoc ARCHES=arm64 ./Scripts/package_app.sh release
 fi
 ACTUAL_WIDGET_ID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$ROOT/CodexBar.app/Contents/PlugIns/CodexBarWidget.appex/Contents/Info.plist")
 if [[ "$ACTUAL_WIDGET_ID" != "$WIDGET_ID" ]]; then

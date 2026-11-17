@@ -1,4 +1,5 @@
 import AppKit
+import CodexBarCore
 import SwiftUI
 import Testing
 @testable import CodexBar
@@ -57,5 +58,48 @@ struct LiveMacCardTests {
         let png = try #require(bitmap.representation(using: .png, properties: [:]))
         try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
         try png.write(to: URL(fileURLWithPath: directory).appendingPathComponent("ai-monitor-live-mac.png"))
+    }
+}
+
+@MainActor
+struct LiveMacCardControllerTests {
+    @Test func `disk capacity prefers the Finder available value and falls back to raw free space`() throws {
+        let finder = try #require(MacDiskCapacity.resolve(important: 150_000_000_000, raw: 80_000_000_000, total: 500_000_000_000))
+        #expect(finder.availableGB == 150)
+        #expect(finder.totalGB == 500)
+        #expect(finder.usedPercent == 70)
+        #expect(MacDiskCapacity.resolve(important: nil, raw: 80_000_000_000, total: 500_000_000_000)?.availableGB == 80)
+        #expect(MacDiskCapacity.resolve(important: 0, raw: 80_000_000_000, total: 500_000_000_000)?.availableGB == 80)
+        #expect(MacDiskCapacity.resolve(important: 9_000_000_000_000, raw: nil, total: 500_000_000_000)?.usedPercent == 0)
+        #expect(MacDiskCapacity.resolve(important: 1, raw: 1, total: 0) == nil)
+        #expect(MacDiskCapacity.current() != nil)
+    }
+
+    @Test func `card can be disabled and pauses sampling while locked or occluded`() throws {
+        let suite = "LiveMacCardControllerTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let controller = LiveMacCardController(defaults: defaults)
+        defer { controller.stop(); controller.hide() }
+
+        #expect(controller.isEnabled)
+        controller.show()
+        #expect(controller.isSampling)
+
+        controller.setPaused(.screensLocked, true)
+        #expect(!controller.isSampling)
+        controller.setPaused(.occluded, true)
+        controller.setPaused(.screensLocked, false)
+        #expect(!controller.isSampling)
+        controller.setPaused(.occluded, false)
+        #expect(controller.isSampling)
+
+        controller.setEnabled(false)
+        #expect(!controller.isEnabled)
+        #expect(!controller.isSampling)
+        #expect(defaults.bool(forKey: LiveMacCardController.enabledKey) == false)
+
+        controller.setEnabled(true)
+        #expect(controller.isSampling)
     }
 }

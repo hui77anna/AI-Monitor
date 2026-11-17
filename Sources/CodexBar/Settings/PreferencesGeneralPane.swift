@@ -86,6 +86,7 @@ enum PreferredCurrencyOption {
 @MainActor
 struct GeneralPane: View {
     @Bindable var settings: SettingsStore
+    @AppStorage(LiveMacCardController.enabledKey) private var liveMacCardEnabled = true
 
     var body: some View {
         Form {
@@ -133,6 +134,15 @@ struct GeneralPane: View {
                     })
 
                 Toggle(L("start_at_login_title"), isOn: self.$settings.launchAtLogin)
+
+                Toggle(isOn: self.$liveMacCardEnabled) {
+                    SettingsRowLabel(
+                        "桌面实时 Mac 状态卡片",
+                        subtitle: "每秒显示 CPU、内存；隐藏、锁屏或被遮挡时自动暂停采样。")
+                }
+                .onChange(of: self.liveMacCardEnabled) { _, enabled in
+                    LiveMacCardController.shared.setEnabled(enabled)
+                }
             } header: {
                 Text(L("section_system"))
             }

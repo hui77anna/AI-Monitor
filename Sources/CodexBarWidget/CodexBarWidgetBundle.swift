@@ -1,4 +1,5 @@
 import AppIntents
+import CodexBarCore
 import Darwin
 import SwiftUI
 import WidgetKit
@@ -197,10 +198,7 @@ struct StudioMacStatusProvider: TimelineProvider {
                 100,
                 pages * Double(getpagesize()) / Double(ProcessInfo.processInfo.physicalMemory) * 100)
         }
-        let filesystem = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
-        let free = (filesystem?[.systemFreeSize] as? NSNumber)?.doubleValue
-        let total = (filesystem?[.systemSize] as? NSNumber)?.doubleValue
-        let used = free.flatMap { free in total.flatMap { $0 > 0 ? (1 - free / $0) * 100 : nil } }
+        let disk = MacDiskCapacity.current()
         var swap = xsw_usage()
         var swapSize = MemoryLayout<xsw_usage>.size
         let swapOK = sysctlbyname("vm.swapusage", &swap, &swapSize, nil, 0) == 0
@@ -211,12 +209,12 @@ struct StudioMacStatusProvider: TimelineProvider {
             date: Date(),
             cpuSamples: samples,
             memoryPercent: memory,
-            availableGB: free.map { $0 / 1_000_000_000 },
-            diskUsedPercent: used,
+            availableGB: disk?.availableGB,
+            diskUsedPercent: disk?.usedPercent,
             memoryTotalGB: Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824,
             swapGB: swapOK ? Double(swap.xsu_used) / 1_073_741_824 : nil,
             pressureLevel: pressureOK ? Int(pressure) : nil,
-            diskTotalGB: total.map { $0 / 1_000_000_000 })
+            diskTotalGB: disk?.totalGB)
     }
 }
 

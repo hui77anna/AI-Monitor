@@ -20,14 +20,49 @@ enum ClaudeCLIUsageSpawnThrottle {
     /// AI Monitor checks usage every five minutes; retain a bounded cache between checks.
     /// Local token history has its own independent refresh policy.
     static let minimumBackgroundSpawnInterval: TimeInterval = 5 * 60
+    /// After a failed background probe (rate limit, network error, CLI timeout), wait at least this long
+    /// before spawning Claude again, doubling per consecutive failure up to `maximumFailureBackoff`.
+    /// Keeps the five-minute cadence for healthy accounts without hammering a failing endpoint.
+    static let initialFailureBackoff: TimeInterval = 15 * 60
+    static let maximumFailureBackoff: TimeInterval = 60 * 60
+
+    struct Failure {
+        let error: any Error
+        let failedAt: Date
+        let consecutiveFailures: Int
+
+        var backoff: TimeInterval {
+            let multiplier = pow(2, Double(max(0, self.consecutiveFailures - 1)))
+            return min(
+                ClaudeCLIUsageSpawnThrottle.maximumFailureBackoff,
+                ClaudeCLIUsageSpawnThrottle.initialFailureBackoff * multiplier)
+        }
+    }
 
     final class Store: @unchecked Sendable {
         private let lock = NSLock()
         private var entries: [Key: Entry] = [:]
+        private var failures: [Key: Failure] = [:]
 
         func insert(_ entry: Entry, for key: Key) {
             self.lock.withLock {
                 self.entries[key] = entry
+                self.failures.removeValue(forKey: key)
+            }
+        }
+
+        func insertFailure(_ error: any Error, for key: Key, now: Date) {
+            self.lock.withLock {
+                let previous = self.failures[key]?.consecutiveFailures ?? 0
+                self.failures[key] = Failure(error: error, failedAt: now, consecutiveFailures: previous + 1)
+            }
+        }
+
+        /// The last failure while its backoff window is still open.
+        func activeFailure(_ key: Key, now: Date) -> Failure? {
+            self.lock.withLock {
+                guard let failure = self.failures[key] else { return nil }
+                return now.timeIntervalSince(failure.failedAt) < failure.backoff ? failure : nil
             }
         }
 
@@ -47,6 +82,7 @@ enum ClaudeCLIUsageSpawnThrottle {
         func removeAll() {
             self.lock.withLock {
                 self.entries.removeAll()
+                self.failures.removeAll()
             }
         }
     }
@@ -96,6 +132,23 @@ enum ClaudeCLIUsageSpawnThrottle {
 
     static func record(_ result: ProviderFetchResult, for key: Key) {
         self.store.insert(Entry(result: result, recordedAt: self.now), for: key)
+    }
+
+    static func recordFailure(_ error: any Error, for key: Key) {
+        self.store.insertFailure(error, for: key, now: self.now)
+    }
+
+    /// The previous background failure to report again instead of respawning Claude during backoff.
+    static func backoffError(for key: Key) -> (any Error)? {
+        let now = self.now
+        guard let failure = self.store.activeFailure(key, now: now) else { return nil }
+        Self.log.debug(
+            "Skipping Claude CLI usage spawn during failure backoff",
+            metadata: [
+                "consecutiveFailures": "\(failure.consecutiveFailures)",
+                "backoffSeconds": "\(failure.backoff)",
+            ])
+        return failure.error
     }
 
     /// A cached result is unusable once any of its rate windows crosses its reset boundary: the

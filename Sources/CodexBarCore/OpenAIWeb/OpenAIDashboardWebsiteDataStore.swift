@@ -60,10 +60,22 @@ public enum OpenAIDashboardWebsiteDataStore {
             .appendingPathComponent("WebsiteDataStore", isDirectory: true)
     }
 
+    /// Bridges the completion-handler API explicitly. The SDK's `async` overlay crashed while resuming its
+    /// continuation (EXC_BAD_ACCESS in `CheckedContinuation.resume`) on macOS 26.5 release and debug builds.
+    @MainActor
+    static func fetchAllDataStoreIdentifiers() async -> [UUID] {
+        await withCheckedContinuation { continuation in
+            WKWebsiteDataStore.fetchAllDataStoreIdentifiers { identifiers in
+                let copied = Array(identifiers)
+                continuation.resume(returning: copied)
+            }
+        }
+    }
+
     static func existingIdentifiers(
         in directory: URL = Self.namedStoreDirectory,
         initialize: () -> Void = { _ = WKWebsiteDataStore.default() },
-        enumerate: () async -> [UUID] = { await WKWebsiteDataStore.allDataStoreIdentifiers }) async -> [UUID]
+        enumerate: () async -> [UUID] = { await Self.fetchAllDataStoreIdentifiers() }) async -> [UUID]
     {
         guard let entries = try? FileManager.default.contentsOfDirectory(atPath: directory.path),
               entries.contains(where: { UUID(uuidString: $0) != nil }) else { return [] }

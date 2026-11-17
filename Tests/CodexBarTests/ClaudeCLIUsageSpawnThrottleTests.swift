@@ -36,6 +36,35 @@ struct ClaudeCLIUsageSpawnThrottleTests {
     }
 
     @Test
+    func `failed background probes back off fifteen minutes doubling to one hour and clear on success`() throws {
+        struct Offline: Error {}
+        let store = ClaudeCLIUsageSpawnThrottle.Store()
+        let key = ClaudeCLIUsageSpawnThrottle.Key(
+            binary: "/usr/local/bin/claude", accountScope: "a", useWebExtras: false, includePrepaidBalance: false)
+        let start = Date(timeIntervalSince1970: 1_000_000)
+
+        store.insertFailure(Offline(), for: key, now: start)
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(15 * 60 - 1)) != nil)
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(15 * 60)) == nil)
+
+        store.insertFailure(Offline(), for: key, now: start)
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(30 * 60 - 1))?.consecutiveFailures == 2)
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(30 * 60)) == nil)
+
+        for _ in 0..<5 {
+            store.insertFailure(Offline(), for: key, now: start)
+        }
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(60 * 60 - 1)) != nil)
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(60 * 60)) == nil)
+
+        let usage = UsageSnapshot(primary: nil, secondary: nil, updatedAt: start)
+        store.insert(.init(result: ProviderFetchResult(
+            usage: usage, credits: nil, dashboard: nil, sourceLabel: "claude",
+            strategyID: "claude.cli", strategyKind: .cli), recordedAt: start), for: key)
+        #expect(store.activeFailure(key, now: start) == nil)
+    }
+
+    @Test
     func `background refresh reuses the cached CLI result within the spawn floor`() async throws {
         let strategy = self.makeStrategy()
         let profile = try self.makeProfile(accountID: "account-a")

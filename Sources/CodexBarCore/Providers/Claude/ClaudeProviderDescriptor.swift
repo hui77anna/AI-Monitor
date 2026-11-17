@@ -1137,6 +1137,14 @@ struct ClaudeCLIFetchStrategy: ProviderFetchStrategy {
         {
             return cached
         }
+        let isThrottledBackground = context.runtime == .app &&
+            ProviderInteractionContext.current == .background &&
+            !context.claudeOwnerCLIRecoveryOnly
+        if isThrottledBackground, let throttleKey,
+           let backoffError = ClaudeCLIUsageSpawnThrottle.backoffError(for: throttleKey)
+        {
+            throw backoffError
+        }
         let keepAlive = context.settings?.debugKeepCLISessionsAlive ?? false
         let fetcher = ClaudeUsageFetcher(
             browserDetection: browserDetection,
@@ -1158,6 +1166,9 @@ struct ClaudeCLIFetchStrategy: ProviderFetchStrategy {
         } catch {
             if Task.isCancelled || ClaudeOAuthFetchError.isCancellation(error) {
                 throw error
+            }
+            if isThrottledBackground, let throttleKey {
+                ClaudeCLIUsageSpawnThrottle.recordFailure(error, for: throttleKey)
             }
             // A transient probe failure does not revoke this account's established CLI availability.
             if ClaudeUsageFetcher.isRetryableCLIProbeError(error),
@@ -1222,7 +1233,7 @@ enum ClaudeCLIBackgroundAvailability {
 
     /// With Keychain access disabled, a failed attempt pauses background usage fetches for this long,
     /// matching the CLI spawn floor.
-    static let initialBackgroundRetryDelay = ClaudeCLIUsageSpawnThrottle.minimumBackgroundSpawnInterval
+    static let initialBackgroundRetryDelay = ClaudeCLIUsageSpawnThrottle.initialFailureBackoff
     /// Each further failure doubles the pause, up to this cap.
     static let maximumBackgroundRetryDelay: TimeInterval = 4 * 60 * 60
 

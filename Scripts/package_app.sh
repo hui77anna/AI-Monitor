@@ -283,6 +283,17 @@ if [[ "$LOWER_CONF" == "debug" ]]; then
   FEED_URL=""
   AUTO_CHECKS=false
 fi
+# Community builds (AI Monitor) ship an optimized Release binary under their established bundle ID so
+# existing App Group data, Keychain grants and widget registrations survive the switch from Debug.
+if [[ -n "${CODEXBAR_BUNDLE_ID_OVERRIDE:-}" ]]; then
+  if [[ "$CODEXBAR_BUNDLE_ID_OVERRIDE" == *[!a-zA-Z0-9.-]* ]]; then
+    echo "ERROR: Invalid CODEXBAR_BUNDLE_ID_OVERRIDE." >&2
+    exit 1
+  fi
+  BUNDLE_ID="$CODEXBAR_BUNDLE_ID_OVERRIDE"
+  FEED_URL=""
+  AUTO_CHECKS=false
+fi
 if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   FEED_URL=""
   AUTO_CHECKS=false

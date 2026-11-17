@@ -9,20 +9,20 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14%2B-20232a?style=flat-square&logo=apple&logoColor=white)](INSTALL.zh-CN.md)
 [![Architecture](https://img.shields.io/badge/芯片-Apple%20Silicon-6256c7?style=flat-square)](INSTALL.zh-CN.md)
-[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%209-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.9)
+[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%2010-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.10)
 [![License](https://img.shields.io/badge/License-MIT-337f76?style=flat-square)](LICENSE)
 
-**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.9/AI-Monitor-0.1.0-beta.9-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
+**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.10/AI-Monitor-0.1.0-beta.10-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
 
 基于 [CodexBar](https://github.com/steipete/CodexBar) 的社区 UI 定制项目 · SwiftUI / WidgetKit 原生组件
 
 </div>
 
-> **Beta 9 · Build 190**：统一“关于”、设置文案、分享署名和菜单栏辅助名称为 AI Monitor。项目主页与帮助入口指向本仓库，上游 CodexBar 作为开源致谢保留。保留五分钟 Claude 额度缓存、左右切换修复与实时 Mac 悬浮卡片。
+> **Beta 10 · Build 191**：改为优化编译的正式版（Release），内存占用约降低 25%、CPU 约降低 70%，安装包从 280 MB 缩小到 115 MB。存储“可用空间”改为与 Finder 一致（包含系统可回收空间）。实时 Mac 卡片可在“设置 › 通用”中关闭，或右键卡片隐藏；锁屏、休眠或被全屏窗口遮挡时自动暂停采样，外接显示器断开后自动回到可见位置。Claude 后台读取失败时退避 15 分钟起、最长 1 小时，避免频繁重试被限流。修复上游 OpenAI 网页缓存清理在 macOS 26 上的崩溃。
 
 ## 桌面预览
 
-**当前下载版本：AI Monitor Beta 9（Build 190）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.9/AI-Monitor-0.1.0-beta.9-macos-arm64.dmg)
+**当前下载版本：AI Monitor Beta 10（Build 191）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.10/AI-Monitor-0.1.0-beta.10-macos-arm64.dmg)
 
 安装后在“编辑小组件”左侧选择 **AI Monitor**。旧 Studio 用户若仍看到旧名称，请参阅[名称缓存处理说明](INSTALL.zh-CN.md#升级后左侧仍显示-codexbar-studio)。
 
@@ -90,7 +90,7 @@ flowchart LR
 
 | 项目 | 当前状态 |
 | --- | --- |
-| 对外版本 | `0.1.0-beta.9` |
+| 对外版本 | `0.1.0-beta.10` |
 | 应用内部版本 | `0.84.1` / Build `190`，保留上游版本以追踪兼容性 |
 | 上游基线 | [steipete/CodexBar · 7447bc7](https://github.com/steipete/CodexBar/commit/7447bc77c2497323d9c41e40164ce705533493c8) |
 | 主要变更 | 桌面卡片 UI、Mac 实时状态、Claude 五分钟额度缓存、显示名称与打包脚本 |

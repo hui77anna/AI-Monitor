@@ -1,4 +1,5 @@
 import AppKit
+import CodexBarCore
 import Darwin
 import Observation
 import SwiftUI
@@ -22,9 +23,7 @@ final class LiveMacSampler {
     private var previousTicks: [UInt32]?
     private var samples: [Double] = []
     private var diskSampleDate: Date?
-    private var diskFree: Double?
-    private var diskTotal: Double?
-    private var diskUsed: Double?
+    private var disk: MacDiskCapacity?
     private var timer: Timer?
 
     static func cpuPercent(previous: [UInt32], next: [UInt32]) -> Double? {
@@ -39,7 +38,7 @@ final class LiveMacSampler {
         self.previousTicks = nil
         self.refresh()
         let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.refresh() }
+            MainActor.assumeIsolated { self?.refresh() }
         }
         timer.tolerance = 0.1
         RunLoop.main.add(timer, forMode: .common)
@@ -51,6 +50,8 @@ final class LiveMacSampler {
         self.timer = nil
         self.previousTicks = nil
     }
+
+    var isRunning: Bool { self.timer != nil }
 
     func refresh() { self.entry = self.sample() }
     private static func cpuTicks() -> [UInt32]? {
@@ -89,18 +90,10 @@ final class LiveMacSampler {
                 pages * Double(getpagesize()) / Double(ProcessInfo.processInfo.physicalMemory) * 100)
         }
         if self.diskSampleDate == nil || Date().timeIntervalSince(self.diskSampleDate!) >= 30 {
-            let filesystem = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
-            let free = (filesystem?[.systemFreeSize] as? NSNumber)?.doubleValue
-            let total = (filesystem?[.systemSize] as? NSNumber)?.doubleValue
-            let used = free.flatMap { free in total.flatMap { $0 > 0 ? (1 - free / $0) * 100 : nil } }
-            self.diskFree = free
-            self.diskTotal = total
-            self.diskUsed = used
+            self.disk = MacDiskCapacity.current()
             self.diskSampleDate = Date()
         }
-        let free = self.diskFree
-        let total = self.diskTotal
-        let used = self.diskUsed
+        let disk = self.disk
         var swap = xsw_usage()
         var swapSize = MemoryLayout<xsw_usage>.size
         let swapOK = sysctlbyname("vm.swapusage", &swap, &swapSize, nil, 0) == 0
@@ -111,12 +104,12 @@ final class LiveMacSampler {
             date: Date(),
             cpuSamples: self.samples,
             memoryPercent: memory,
-            availableGB: free.map { $0 / 1_000_000_000 },
-            diskUsedPercent: used,
+            availableGB: disk?.availableGB,
+            diskUsedPercent: disk?.usedPercent,
             memoryTotalGB: Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824,
             swapGB: swapOK ? Double(swap.xsu_used) / 1_073_741_824 : nil,
             pressureLevel: pressureOK ? Int(pressure) : nil,
-            diskTotalGB: total.map { $0 / 1_000_000_000 })
+            diskTotalGB: disk?.totalGB)
     }
 }
 
@@ -254,15 +247,40 @@ struct LiveMacCardView: View {
 @MainActor
 final class LiveMacCardController: NSObject, NSWindowDelegate {
     static let shared = LiveMacCardController()
+    static let enabledKey = "aiMonitorLiveMacCardEnabled"
+
     private let sampler = LiveMacSampler()
+    private let defaults: UserDefaults
     private var panel: NSPanel?
-    private var sleeping = false
+    private var observing = false
+    /// Reasons sampling is paused; sampling runs only while this is empty.
+    private var pauses: Set<Pause> = []
+
+    enum Pause: Hashable {
+        case systemSleep
+        case screensLocked
+        case occluded
+    }
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        super.init()
+    }
+
+    var isEnabled: Bool {
+        self.defaults.object(forKey: Self.enabledKey) as? Bool ?? true
+    }
+
+    var isSampling: Bool { self.sampler.isRunning }
 
     func start() {
-        let center = NSWorkspace.shared.notificationCenter
-        center.addObserver(self, selector: #selector(self.sleep), name: NSWorkspace.willSleepNotification, object: nil)
-        center.addObserver(self, selector: #selector(self.wake), name: NSWorkspace.didWakeNotification, object: nil)
-        self.show()
+        self.observeSystem()
+        if self.isEnabled { self.show() }
+    }
+
+    func setEnabled(_ enabled: Bool) {
+        self.defaults.set(enabled, forKey: Self.enabledKey)
+        if enabled { self.show() } else { self.hide() }
     }
 
     func show() {
@@ -283,28 +301,96 @@ final class LiveMacCardController: NSObject, NSWindowDelegate {
             panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
             panel.delegate = self
             panel.setFrameAutosaveName("AI Monitor Live Mac Card")
-            if !NSScreen.screens.contains(where: { $0.visibleFrame.intersects(panel.frame) }),
-               let screen = NSScreen.main
-            {
-                panel.setFrameOrigin(NSPoint(x: screen.visibleFrame.minX + 24, y: screen.visibleFrame.maxY - 190))
-            }
-            panel.contentView = NSHostingView(rootView: LiveMacCardRoot(sampler: self.sampler))
+            let root = LiveMacCardRoot(sampler: self.sampler, hide: { [weak self] in self?.setEnabled(false) })
+            panel.contentView = NSHostingView(rootView: root)
             self.panel = panel
         }
+        self.keepOnScreen()
         self.panel?.orderFrontRegardless()
-        if !self.sleeping { self.sampler.start() }
+        self.pauses.remove(.occluded)
+        self.updateSampling()
     }
 
-    @objc private func sleep() { self.sleeping = true; self.sampler.stop() }
-    @objc private func wake() { self.sleeping = false; self.sampler.start() }
+    func hide() {
+        self.panel?.orderOut(nil)
+        self.updateSampling()
+    }
+
     func stop() {
         self.sampler.stop()
-        NSWorkspace.shared.notificationCenter.removeObserver(self)
+        if self.observing {
+            NSWorkspace.shared.notificationCenter.removeObserver(self)
+            DistributedNotificationCenter.default().removeObserver(self)
+            NotificationCenter.default.removeObserver(self)
+            self.observing = false
+        }
+    }
+
+    /// Exposed for tests: applies a pause change and re-evaluates whether sampling should run.
+    func setPaused(_ pause: Pause, _ paused: Bool) {
+        if paused { self.pauses.insert(pause) } else { self.pauses.remove(pause) }
+        self.updateSampling()
+    }
+
+    private func updateSampling() {
+        let visible = self.isEnabled && (self.panel?.isVisible ?? false)
+        if visible, self.pauses.isEmpty {
+            self.sampler.start()
+        } else {
+            self.sampler.stop()
+        }
+    }
+
+    /// Moves the card back onto a screen after a display is disconnected or rearranged.
+    func keepOnScreen() {
+        guard let panel = self.panel else { return }
+        let screens = NSScreen.screens
+        guard !screens.isEmpty,
+              !screens.contains(where: { $0.visibleFrame.intersects(panel.frame) }),
+              let screen = NSScreen.main ?? screens.first
+        else { return }
+        panel.setFrameOrigin(NSPoint(
+            x: screen.visibleFrame.minX + 24,
+            y: screen.visibleFrame.maxY - panel.frame.height - 24))
+    }
+
+    private func observeSystem() {
+        guard !self.observing else { return }
+        self.observing = true
+        let workspace = NSWorkspace.shared.notificationCenter
+        workspace.addObserver(self, selector: #selector(self.willSleep), name: NSWorkspace.willSleepNotification, object: nil)
+        workspace.addObserver(self, selector: #selector(self.didWake), name: NSWorkspace.didWakeNotification, object: nil)
+        workspace.addObserver(
+            self, selector: #selector(self.willSleep), name: NSWorkspace.screensDidSleepNotification, object: nil)
+        workspace.addObserver(
+            self, selector: #selector(self.didWake), name: NSWorkspace.screensDidWakeNotification, object: nil)
+        let distributed = DistributedNotificationCenter.default()
+        distributed.addObserver(
+            self, selector: #selector(self.screenLocked),
+            name: Notification.Name("com.apple.screenIsLocked"), object: nil)
+        distributed.addObserver(
+            self, selector: #selector(self.screenUnlocked),
+            name: Notification.Name("com.apple.screenIsUnlocked"), object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(self.screensChanged),
+            name: NSApplication.didChangeScreenParametersNotification, object: nil)
+    }
+
+    @objc private func willSleep() { self.setPaused(.systemSleep, true) }
+    @objc private func didWake() { self.setPaused(.systemSleep, false) }
+    @objc private func screenLocked() { self.setPaused(.screensLocked, true) }
+    @objc private func screenUnlocked() { self.setPaused(.screensLocked, false) }
+    @objc private func screensChanged() { self.keepOnScreen() }
+
+    func windowDidChangeOcclusionState(_ notification: Notification) {
+        guard let panel = self.panel else { return }
+        self.setPaused(.occluded, !panel.occlusionState.contains(.visible))
     }
 }
 
 private struct LiveMacCardRoot: View {
     let sampler: LiveMacSampler
+    let hide: () -> Void
     var body: some View {
         LiveMacCardView(entry: self.sampler.entry, refresh: { self.sampler.refresh() })
             .padding(14)
@@ -314,5 +400,8 @@ private struct LiveMacCardRoot: View {
                 endPoint: .bottomTrailing))
             .clipShape(RoundedRectangle(cornerRadius: 22))
             .environment(\.colorScheme, .dark)
+            .contextMenu {
+                Button(action: self.hide) { Text(verbatim: "隐藏实时卡片（可在设置 › 通用 中重新打开）") }
+            }
     }
 }
