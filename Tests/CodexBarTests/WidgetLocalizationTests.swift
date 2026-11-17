@@ -54,7 +54,8 @@ struct WidgetLocalizationTests {
                     "Credits left",
                     "No data",
                 ] {
-                    #expect(W(key) == app[key])
+                    // AI Monitor brands widget text; the shared app catalog keeps the upstream name.
+                    #expect(W(key) == app[key]?.replacingOccurrences(of: "CodexBar", with: "AI Monitor"))
                     if language != .english {
                         #expect(W(key) != key, "Untranslated widget text in \(language.rawValue): \(key)")
                     }

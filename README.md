@@ -9,20 +9,22 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14%2B-20232a?style=flat-square&logo=apple&logoColor=white)](INSTALL.zh-CN.md)
 [![Architecture](https://img.shields.io/badge/芯片-Apple%20Silicon-6256c7?style=flat-square)](INSTALL.zh-CN.md)
-[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%2010-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.10)
+[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%2011-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.11)
 [![License](https://img.shields.io/badge/License-MIT-337f76?style=flat-square)](LICENSE)
 
-**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.10/AI-Monitor-0.1.0-beta.10-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
+**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.11/AI-Monitor-0.1.0-beta.11-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
 
 基于 [CodexBar](https://github.com/steipete/CodexBar) 的社区 UI 定制项目 · SwiftUI / WidgetKit 原生组件
 
 </div>
 
+> **Beta 11 · Build 192**：组件库精简为“切换器”和“用量”两种组件（原有 9 种、约 20 个尺寸选项），移除重复的用量历史、Mac 状态小组件，以及订阅账户用不上的指标、消耗趋势、账户用量组件；升级后桌面上的空白旧卡片右键移除即可。
+>
 > **Beta 10 · Build 191**：改为优化编译的正式版（Release），内存占用约降低 25%、CPU 约降低 70%，安装包从 280 MB 缩小到 115 MB。存储“可用空间”改为与 Finder 一致（包含系统可回收空间）。实时 Mac 卡片可在“设置 › 通用”中关闭，或右键卡片隐藏；锁屏、休眠或被全屏窗口遮挡时自动暂停采样，外接显示器断开后自动回到可见位置。Claude 后台读取失败时退避 15 分钟起、最长 1 小时，避免频繁重试被限流。修复上游 OpenAI 网页缓存清理在 macOS 26 上的崩溃。
 
 ## 桌面预览
 
-**当前下载版本：AI Monitor Beta 10（Build 191）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.10/AI-Monitor-0.1.0-beta.10-macos-arm64.dmg)
+**当前下载版本：AI Monitor Beta 11（Build 192）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.11/AI-Monitor-0.1.0-beta.11-macos-arm64.dmg)
 
 安装后在“编辑小组件”左侧选择 **AI Monitor**。旧 Studio 用户若仍看到旧名称，请参阅[名称缓存处理说明](INSTALL.zh-CN.md#升级后左侧仍显示-codexbar-studio)。
 
@@ -53,7 +55,7 @@
 | --- | --- |
 | **额度概览** | 分段进度条显示来源提供的额度比例，配合重置时间查看当前用量窗口。 |
 | **七日用量** | 大号卡片提供 token 历史图，保留日期空缺，区分无记录与零用量。 |
-| **多种尺寸** | 用量卡片支持小、中、大尺寸；Mac 状态支持小、中尺寸。 |
+| **精简组件库** | 只提供“切换器”和“用量”两种组件，各支持小、中、大尺寸；Mac 状态由实时悬浮卡片显示。 |
 | **本机状态** | 实时悬浮卡片：CPU / 内存约每秒更新、磁盘每 30 秒更新。 |
 | **原生桌面集成** | 通过 macOS 小组件库添加；支持系统全彩、单色与染色外观。 |
 | **成熟的接入基础** | 复用 CodexBar 的提供方适配、账户处理与刷新机制，无需另开一套中转程序。 |
@@ -62,9 +64,9 @@
 
 1. **安装应用**：下载 DMG，将 `AI Monitor.app` 拖入“应用程序”，然后打开。应用常驻菜单栏。
 2. **连接账户**：先在 Codex / Claude Code 中登录自己的账户，再在应用设置中启用对应提供方。
-3. **添加组件**：桌面右键 → **编辑小组件** → 搜索 **AI Monitor**，添加“用量”或“Mac 状态”。
+3. **添加组件**：桌面右键 → **编辑小组件** → 搜索 **AI Monitor**，添加“用量”或“切换器”。
 
-Mac 实时悬浮卡片在应用启动时自动出现，无需从小组件库添加。旧 Mac 状态小组件可移除以免重复。推荐组合：Codex 大号 + Claude 中号 + Mac 实时悬浮卡片。使用大号卡片可以查看更多历史记录；首次安装没有历史时，图表可能为空。
+Mac 实时悬浮卡片在应用启动时自动出现，无需从小组件库添加。推荐组合：Codex 大号 + Claude 中号 + Mac 实时悬浮卡片。使用大号卡片可以查看更多历史记录；首次安装没有历史时，图表可能为空。
 
 > **当前发布状态：公开测试版。** 支持 Apple Silicon 与 macOS 14+；Intel 暂不支持。安装包已完成本机签名、运行与完整性检查，尚未做 Apple Developer ID 公证或异机安装验收。首次启动可能需要按 macOS 提示确认。[安装与故障排查](INSTALL.zh-CN.md)
 
@@ -82,7 +84,7 @@ flowchart LR
     G["WidgetKit 系统调度"] -. "控制实际展示时机" .-> D
 ```
 
-**准确性与更新速度是两件事。** 本定制版不重新估算平台额度；数据是否完整取决于来源，何时显示取决于取数缓存、刷新周期与系统调度。Claude CLI 后台路径有 5 分钟最小间隔；Mac 实时悬浮卡片的 CPU / 内存约每秒采样、磁盘每 30 秒读取；旧原生 Mac 小组件仍约每 5 分钟请求更新。AI 额度不代表秒级实时。
+**准确性与更新速度是两件事。** 本定制版不重新估算平台额度；数据是否完整取决于来源，何时显示取决于取数缓存、刷新周期与系统调度。Claude CLI 后台路径有 5 分钟最小间隔；Mac 实时悬浮卡片的 CPU / 内存约每秒采样、磁盘每 30 秒读取；AI 额度不代表秒级实时。
 
 [阅读架构、数据口径与刷新机制 →](ARCHITECTURE.md)
 
@@ -90,7 +92,7 @@ flowchart LR
 
 | 项目 | 当前状态 |
 | --- | --- |
-| 对外版本 | `0.1.0-beta.10` |
+| 对外版本 | `0.1.0-beta.11` |
 | 应用内部版本 | `0.84.1` / Build `190`，保留上游版本以追踪兼容性 |
 | 上游基线 | [steipete/CodexBar · 7447bc7](https://github.com/steipete/CodexBar/commit/7447bc77c2497323d9c41e40164ce705533493c8) |
 | 主要变更 | 桌面卡片 UI、Mac 实时状态、Claude 五分钟额度缓存、显示名称与打包脚本 |

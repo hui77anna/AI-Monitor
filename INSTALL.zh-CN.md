@@ -2,7 +2,7 @@
 
 从下载到桌面添加组件，通常只需完成安装、账户连接和组件配置三个步骤。
 
-[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.10/AI-Monitor-0.1.0-beta.10-macos-arm64.dmg)
+[返回首页](README.md) · [下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.11/AI-Monitor-0.1.0-beta.11-macos-arm64.dmg)
 
 ## 使用条件
 
@@ -11,7 +11,7 @@
 | 系统 | macOS 14 或更高版本 |
 | 芯片 | Apple Silicon；当前安装包不支持 Intel |
 | AI 数据 | 你自己的、受所选来源支持的已登录账户 |
-| 发布阶段 | 0.1.0-beta.10，开发签名测试版，尚未公证或异机验收 |
+| 发布阶段 | 0.1.0-beta.11，开发签名测试版，尚未公证或异机验收 |
 
 ## 从 CodexBar Studio / Beta 1 升级
 
@@ -23,7 +23,7 @@ Beta 3 为组件分配了新的扩展标识，避免沿用旧安装路径的系�
 
 ## 1. 安装应用
 
-在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.10) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.10-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
+在 [发布页](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.11) 的 **Assets** 中下载 `AI-Monitor-0.1.0-beta.11-macos-arm64.dmg`。`Source code` 是源码，不能直接作为应用安装。
 
 打开 DMG，将 **AI Monitor.app** 拖入 **Applications（应用程序）**。如果正在运行 CodexBar Studio，先将其退出，然后从“应用程序”打开 AI Monitor。
 
@@ -61,7 +61,9 @@ Claude 自动来源没有数据时，可在来源设置中选择 **CLI**，通�
 | --- | --- | --- |
 | AI Monitor 用量 | 大号 | 添加后编辑组件，提供方选择 Codex |
 | AI Monitor 用量 | 中号或大号 | 再添加一张，提供方选择 Claude |
-| Mac 状态 | 中号 | 无需连接 AI 账户 |
+| AI Monitor 切换器 | 小／中／大 | 可选：一张卡片内点箭头切换 Codex／Claude |
+
+从 Beta 11 起，组件库只保留“切换器”和“用量”两种组件。Mac 状态改由应用自带的实时悬浮卡片显示，无需从组件库添加。
 
 大号用量卡片包含历史图。首次安装缺少历史记录时，图表可能为空。
 
@@ -100,4 +102,4 @@ Beta 3（Build 184）的应用与组件显示名称均为 AI Monitor。旧开发
 
 启动 AI Monitor 后会自动显示 Mac 状态悬浮卡片，拖动背景可调整位置，重启应用会恢复位置。CPU、内存与 Swap 约每秒采样，磁盘每 30 秒读取；CPU 曲线表示最近 30 次采样。系统休眠时停止，唤醒后恢复。应用退出时卡片消失。卡片处于桌面层，不强制覆盖其他应用窗口。
 
-旧“Mac 状态”WidgetKit 小组件仍保留兼容，但不具有秒级更新；可右键移除旧卡片，保留新的实时卡片。Codex / Claude 额度仍受平台和 WidgetKit 调度限制。
+Beta 11 起不再提供旧“Mac 状态”小组件。升级后桌面上若有空白的旧卡片（Mac 状态、用量历史、指标、消耗趋势、账户用量），右键移除即可。Codex / Claude 额度仍受平台和 WidgetKit 调度限制。

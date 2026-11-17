@@ -6,16 +6,12 @@ import WidgetKit
 
 @main
 struct CodexBarWidgetBundle: WidgetBundle {
+    /// AI Monitor registers only the two styled quota widgets. The usage widget's large size already carries
+    /// the seven-day chart, and live Mac status is the desktop floating card in the app. The other upstream
+    /// widgets stay in source (and in tests) so they can be re-registered here without other changes.
     var body: some Widget {
         CodexBarSwitcherWidget()
         CodexBarUsageWidget()
-        CodexBarHistoryWidget()
-        CodexBarCompactWidget()
-        CodexBarBurnDownWidget()
-        CodexBarCombinedBurnDownWidget()
-        CodexBarAccountUsageWidget()
-        CodexBarAccountsWidget()
-        StudioMacStatusWidget()
     }
 }
 
