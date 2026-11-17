@@ -6,13 +6,12 @@ import WidgetKit
 
 @main
 struct CodexBarWidgetBundle: WidgetBundle {
-    /// AI Monitor registers the two styled quota widgets plus the Mac status widget. The usage widget's large
-    /// size already carries the seven-day chart. The other upstream widgets stay in source (and in tests) so
-    /// they can be re-registered here without other changes.
+    /// AI Monitor registers only the two styled quota widgets. The usage widget's large size already carries
+    /// the seven-day chart, and Mac status is the app's live floating card (WidgetKit cannot refresh per
+    /// second). The other widgets stay in source (and in tests) so they can be re-registered here.
     var body: some Widget {
         CodexBarSwitcherWidget()
         CodexBarUsageWidget()
-        StudioMacStatusWidget()
     }
 }
 

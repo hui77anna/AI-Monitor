@@ -248,6 +248,7 @@ struct LiveMacCardView: View {
 final class LiveMacCardController: NSObject, NSWindowDelegate {
     static let shared = LiveMacCardController()
     static let enabledKey = "aiMonitorLiveMacCardEnabled"
+    static let originKey = "aiMonitorLiveMacCardOrigin"
 
     private let sampler = LiveMacSampler()
     private let defaults: UserDefaults
@@ -300,7 +301,9 @@ final class LiveMacCardController: NSObject, NSWindowDelegate {
             panel.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
             panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
             panel.delegate = self
-            panel.setFrameAutosaveName("AI Monitor Live Mac Card")
+            // AppKit's frame autosave remaps the saved rect between displays on multi-monitor setups, so the
+            // card could reappear on another screen after relaunch. Store the exact global origin instead.
+            if let origin = self.savedOrigin() { panel.setFrameOrigin(origin) }
             let root = LiveMacCardRoot(sampler: self.sampler, hide: { [weak self] in self?.setEnabled(false) })
             panel.contentView = NSHostingView(rootView: root)
             self.panel = panel
@@ -342,16 +345,37 @@ final class LiveMacCardController: NSObject, NSWindowDelegate {
     }
 
     /// Moves the card back onto a screen after a display is disconnected or rearranged.
+    /// A card that is mostly off every screen goes to the top-left of the primary (menu bar) display.
     func keepOnScreen() {
         guard let panel = self.panel else { return }
         let screens = NSScreen.screens
-        guard !screens.isEmpty,
-              !screens.contains(where: { $0.visibleFrame.intersects(panel.frame) }),
-              let screen = NSScreen.main ?? screens.first
-        else { return }
+        guard !screens.isEmpty else { return }
+        let frame = panel.frame
+        let visibleArea = screens.reduce(CGFloat(0)) { area, screen in
+            let overlap = screen.visibleFrame.intersection(frame)
+            return area + (overlap.isNull ? 0 : overlap.width * overlap.height)
+        }
+        guard visibleArea < frame.width * frame.height * 0.5, let screen = screens.first else { return }
         panel.setFrameOrigin(NSPoint(
             x: screen.visibleFrame.minX + 24,
-            y: screen.visibleFrame.maxY - panel.frame.height - 24))
+            y: screen.visibleFrame.maxY - frame.height - 24))
+        self.saveOrigin()
+    }
+
+    private func savedOrigin() -> NSPoint? {
+        guard let values = self.defaults.array(forKey: Self.originKey) as? [Double], values.count == 2 else {
+            return nil
+        }
+        return NSPoint(x: values[0], y: values[1])
+    }
+
+    private func saveOrigin() {
+        guard let origin = self.panel?.frame.origin else { return }
+        self.defaults.set([Double(origin.x), Double(origin.y)], forKey: Self.originKey)
+    }
+
+    func windowDidMove(_ notification: Notification) {
+        self.saveOrigin()
     }
 
     private func observeSystem() {
