@@ -184,7 +184,9 @@ private func lprojBundle(named language: String, in resourceBundle: Bundle) -> B
 
 func L(_ key: String) -> String {
     let resourceBundle = codexBarLocalizationResourceBundle()
-    return codexBarLocalizedString(key, bundle: localizedBundle(), resourceBundle: resourceBundle)
+    return aiMonitorDisplayText(
+        key: key,
+        value: codexBarLocalizedString(key, bundle: localizedBundle(), resourceBundle: resourceBundle))
 }
 
 func L(_ key: String, _ arguments: CVarArg...) -> String {
@@ -194,7 +196,9 @@ func L(_ key: String, _ arguments: CVarArg...) -> String {
 func L(_ key: String, language: String) -> String {
     let resourceBundle = codexBarLocalizationResourceBundle()
     let bundle = localizedBundle(forLanguage: language)
-    return codexBarLocalizedString(key, bundle: bundle, resourceBundle: resourceBundle)
+    return aiMonitorDisplayText(
+        key: key,
+        value: codexBarLocalizedString(key, bundle: bundle, resourceBundle: resourceBundle))
 }
 
 /// Uses an explicit duration for Simplified Chinese quota surfaces while preserving the generic
@@ -287,9 +291,18 @@ func resetCodexBarLocalizationCacheForTesting() {
 func configureUsageFormatterLocalizationProvider() {
     UsageFormatter.setLocalizationProvider { key in
         let resourceBundle = codexBarLocalizationResourceBundle()
-        return codexBarLocalizedString(key, bundle: localizedBundle(), resourceBundle: resourceBundle)
+        return aiMonitorDisplayText(
+            key: key,
+            value: codexBarLocalizedString(key, bundle: localizedBundle(), resourceBundle: resourceBundle))
     }
     UsageFormatter.setLocaleProvider {
         codexBarLocalizedLocale()
     }
+}
+
+/// Presentation only. Preserve copyright, executable paths and technical identifiers.
+func aiMonitorDisplayText(key: String, value: String) -> String {
+    guard key != "copyright", !value.contains("/"), !value.contains("com.steipete"),
+          !value.contains(".app"), !value.contains(".log") else { return value }
+    return value.replacingOccurrences(of: "CodexBar", with: "AI Monitor")
 }

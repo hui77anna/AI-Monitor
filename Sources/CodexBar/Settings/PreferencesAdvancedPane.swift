@@ -35,7 +35,7 @@ struct AdvancedPane: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(status)
                             Link(L("CodexBar Help"), destination: URL(
-                                string: "https://github.com/steipete/CodexBar/blob/main/docs/cli.md#install")!)
+                                string: "https://github.com/hui77anna/AI-Monitor/blob/main/docs/cli.md#install")!)
                         }
                     }
                 }
