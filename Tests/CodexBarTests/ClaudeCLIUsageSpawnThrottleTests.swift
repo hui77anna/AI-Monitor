@@ -36,32 +36,40 @@ struct ClaudeCLIUsageSpawnThrottleTests {
     }
 
     @Test
-    func `failed background probes back off fifteen minutes doubling to one hour and clear on success`() throws {
+    func `failed background probes back off five minutes doubling to one hour and keep the last good result`() throws {
         struct Offline: Error {}
         let store = ClaudeCLIUsageSpawnThrottle.Store()
         let key = ClaudeCLIUsageSpawnThrottle.Key(
             binary: "/usr/local/bin/claude", accountScope: "a", useWebExtras: false, includePrepaidBalance: false)
         let start = Date(timeIntervalSince1970: 1_000_000)
 
-        store.insertFailure(Offline(), for: key, now: start)
-        #expect(store.activeFailure(key, now: start.addingTimeInterval(15 * 60 - 1)) != nil)
-        #expect(store.activeFailure(key, now: start.addingTimeInterval(15 * 60)) == nil)
+        #expect(store.lastKnownGood(key, now: start) == nil)
+        let usage = UsageSnapshot(
+            primary: RateWindow(
+                usedPercent: 7, windowMinutes: 300, resetsAt: start.addingTimeInterval(3 * 3600),
+                resetDescription: nil),
+            secondary: nil,
+            updatedAt: start)
+        store.insert(.init(result: ProviderFetchResult(
+            usage: usage, credits: nil, dashboard: nil, sourceLabel: "claude",
+            strategyID: "claude.cli", strategyKind: .cli), recordedAt: start), for: key)
 
         store.insertFailure(Offline(), for: key, now: start)
-        #expect(store.activeFailure(key, now: start.addingTimeInterval(30 * 60 - 1))?.consecutiveFailures == 2)
-        #expect(store.activeFailure(key, now: start.addingTimeInterval(30 * 60)) == nil)
-
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(5 * 60 - 1)) != nil)
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(5 * 60)) == nil)
+        store.insertFailure(Offline(), for: key, now: start)
+        #expect(store.activeFailure(key, now: start.addingTimeInterval(10 * 60 - 1))?.consecutiveFailures == 2)
         for _ in 0..<5 {
             store.insertFailure(Offline(), for: key, now: start)
         }
         #expect(store.activeFailure(key, now: start.addingTimeInterval(60 * 60 - 1)) != nil)
         #expect(store.activeFailure(key, now: start.addingTimeInterval(60 * 60)) == nil)
 
-        let usage = UsageSnapshot(primary: nil, secondary: nil, updatedAt: start)
-        store.insert(.init(result: ProviderFetchResult(
-            usage: usage, credits: nil, dashboard: nil, sourceLabel: "claude",
-            strategyID: "claude.cli", strategyKind: .cli), recordedAt: start), for: key)
-        #expect(store.activeFailure(key, now: start) == nil)
+        // Failures keep the last good quota (until its window resets) instead of blanking the widget.
+        let kept = try #require(store.lastKnownGood(key, now: start.addingTimeInterval(2 * 3600)))
+        #expect(kept.result.usage.primary?.usedPercent == 7)
+        #expect(kept.result.usage.updatedAt == start)
+        #expect(store.lastKnownGood(key, now: start.addingTimeInterval(3 * 3600)) == nil)
     }
 
     @Test

@@ -20,10 +20,11 @@ enum ClaudeCLIUsageSpawnThrottle {
     /// AI Monitor checks usage every five minutes; retain a bounded cache between checks.
     /// Local token history has its own independent refresh policy.
     static let minimumBackgroundSpawnInterval: TimeInterval = 5 * 60
-    /// After a failed background probe (rate limit, network error, CLI timeout), wait at least this long
-    /// before spawning Claude again, doubling per consecutive failure up to `maximumFailureBackoff`.
-    /// Keeps the five-minute cadence for healthy accounts without hammering a failing endpoint.
-    static let initialFailureBackoff: TimeInterval = 15 * 60
+    /// After a failed background probe (rate limit, network error, CLI timeout, Claude Code mid-update), wait
+    /// this long before spawning Claude again, doubling per consecutive failure up to `maximumFailureBackoff`.
+    /// The first retry keeps the normal five-minute cadence so a one-off failure recovers on the next tick;
+    /// only repeated failures slow down (5 → 10 → 20 → 40 → 60 minutes).
+    static let initialFailureBackoff: TimeInterval = 5 * 60
     static let maximumFailureBackoff: TimeInterval = 60 * 60
 
     struct Failure {
@@ -43,11 +44,25 @@ enum ClaudeCLIUsageSpawnThrottle {
         private let lock = NSLock()
         private var entries: [Key: Entry] = [:]
         private var failures: [Key: Failure] = [:]
+        /// The most recent successful result, kept past the spawn floor so a failed refresh can keep
+        /// showing the last known quota (with its original timestamp) instead of blanking the card.
+        private var lastSuccess: [Key: Entry] = [:]
 
         func insert(_ entry: Entry, for key: Key) {
             self.lock.withLock {
                 self.entries[key] = entry
+                self.lastSuccess[key] = entry
                 self.failures.removeValue(forKey: key)
+            }
+        }
+
+        /// Last good result while none of its windows has reset; nil once it would describe a past window.
+        func lastKnownGood(_ key: Key, now: Date) -> Entry? {
+            self.lock.withLock {
+                guard let entry = self.lastSuccess[key],
+                      !ClaudeCLIUsageSpawnThrottle.anyWindowHasReset(in: entry.result.usage, now: now)
+                else { return nil }
+                return entry
             }
         }
 
@@ -83,6 +98,7 @@ enum ClaudeCLIUsageSpawnThrottle {
             self.lock.withLock {
                 self.entries.removeAll()
                 self.failures.removeAll()
+                self.lastSuccess.removeAll()
             }
         }
     }
@@ -132,6 +148,11 @@ enum ClaudeCLIUsageSpawnThrottle {
 
     static func record(_ result: ProviderFetchResult, for key: Key) {
         self.store.insert(Entry(result: result, recordedAt: self.now), for: key)
+    }
+
+    /// The last successful result to keep showing after a failed background refresh, if still valid.
+    static func lastKnownGoodResult(for key: Key) -> ProviderFetchResult? {
+        self.store.lastKnownGood(key, now: self.now)?.result
     }
 
     static func recordFailure(_ error: any Error, for key: Key) {

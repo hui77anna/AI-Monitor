@@ -376,7 +376,9 @@ struct ClaudeCLIBackgroundAvailabilityTests {
                 // without a network connection.
                 #expect(await self.fetchUsage(strategy, context: context))
                 clock.advance(by: ClaudeCLIUsageSpawnThrottle.minimumBackgroundSpawnInterval + 1)
-                #expect(await !self.fetchUsage(strategy, context: context, failure: Self.offlineFailure))
+                // The failed attempt keeps showing the last good quota instead of blanking the card,
+                // while background availability is still paused for the retry delay.
+                #expect(await self.fetchUsage(strategy, context: context, failure: Self.offlineFailure))
 
                 #expect(await !strategy.isAvailable(context))
                 clock.advance(by: retryDelay - 1)
@@ -386,7 +388,7 @@ struct ClaudeCLIBackgroundAvailabilityTests {
                 #expect(await self.fetchUsage(strategy, context: context))
 
                 clock.advance(by: ClaudeCLIUsageSpawnThrottle.minimumBackgroundSpawnInterval + 1)
-                #expect(await !self.fetchUsage(strategy, context: context, failure: Self.offlineFailure))
+                #expect(await self.fetchUsage(strategy, context: context, failure: Self.offlineFailure))
                 clock.advance(by: retryDelay)
                 #expect(await strategy.isAvailable(context))
             }

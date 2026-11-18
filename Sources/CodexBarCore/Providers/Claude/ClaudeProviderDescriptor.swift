@@ -1143,6 +1143,7 @@ struct ClaudeCLIFetchStrategy: ProviderFetchStrategy {
         if isThrottledBackground, let throttleKey,
            let backoffError = ClaudeCLIUsageSpawnThrottle.backoffError(for: throttleKey)
         {
+            if let lastGood = ClaudeCLIUsageSpawnThrottle.lastKnownGoodResult(for: throttleKey) { return lastGood }
             throw backoffError
         }
         let keepAlive = context.settings?.debugKeepCLISessionsAlive ?? false
@@ -1171,15 +1172,21 @@ struct ClaudeCLIFetchStrategy: ProviderFetchStrategy {
                 ClaudeCLIUsageSpawnThrottle.recordFailure(error, for: throttleKey)
             }
             // A transient probe failure does not revoke this account's established CLI availability.
-            if ClaudeUsageFetcher.isRetryableCLIProbeError(error),
-               ClaudeCLIBackgroundAvailability.isEstablished(backgroundAvailabilityMarker)
-            {
-                throw error
-            }
-            if let backgroundAvailabilityMarker {
+            let keepsAvailability = ClaudeUsageFetcher.isRetryableCLIProbeError(error) &&
+                ClaudeCLIBackgroundAvailability.isEstablished(backgroundAvailabilityMarker)
+            if !keepsAvailability, let backgroundAvailabilityMarker {
                 ClaudeCLIBackgroundAvailability.revoke(
                     backgroundAvailabilityMarker,
                     requiresForegroundRefresh: ClaudeUsageFetcher.isCLIAuthenticationError(error))
+            }
+            // A transient background failure (e.g. Claude Code updating itself) keeps the last known quota on
+            // screen, still stamped with its original time, instead of blanking the widget. Sign-in problems
+            // still surface so the user can fix them.
+            if isThrottledBackground, let throttleKey,
+               !ClaudeUsageFetcher.isCLIAuthenticationError(error),
+               let lastGood = ClaudeCLIUsageSpawnThrottle.lastKnownGoodResult(for: throttleKey)
+            {
+                return lastGood
             }
             throw error
         }
@@ -1233,7 +1240,7 @@ enum ClaudeCLIBackgroundAvailability {
 
     /// With Keychain access disabled, a failed attempt pauses background usage fetches for this long,
     /// matching the CLI spawn floor.
-    static let initialBackgroundRetryDelay = ClaudeCLIUsageSpawnThrottle.initialFailureBackoff
+    static let initialBackgroundRetryDelay: TimeInterval = 15 * 60
     /// Each further failure doubles the pause, up to this cap.
     static let maximumBackgroundRetryDelay: TimeInterval = 4 * 60 * 60
 
