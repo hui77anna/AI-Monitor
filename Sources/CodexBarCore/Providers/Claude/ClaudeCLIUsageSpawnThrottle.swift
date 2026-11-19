@@ -17,9 +17,10 @@ enum ClaudeCLIUsageSpawnThrottle {
         let recordedAt: Date
     }
 
-    /// AI Monitor checks usage every five minutes; retain a bounded cache between checks.
-    /// Local token history has its own independent refresh policy.
-    static let minimumBackgroundSpawnInterval: TimeInterval = 5 * 60
+    /// AI Monitor checks usage every minute. A probe takes ~10 s, so the next tick finds a result ~50 s old;
+    /// a 45 s floor lets every one-minute tick refresh while still absorbing back-to-back refresh triggers.
+    /// Each probe launches Claude Code, so this also caps faster schedules. Token history refreshes separately.
+    static let minimumBackgroundSpawnInterval: TimeInterval = 45
     /// After a failed background probe (rate limit, network error, CLI timeout, Claude Code mid-update), wait
     /// this long before spawning Claude again, doubling per consecutive failure up to `maximumFailureBackoff`.
     /// The first retry keeps the normal five-minute cadence so a one-off failure recovers on the next tick;

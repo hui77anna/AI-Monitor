@@ -762,7 +762,8 @@ extension SettingsStore {
 
         // An invalid value is existing state. Missing state is Adaptive only when no prior-installation
         // state existed before migrations began; legacy unset users keep the old five-minute fallback.
-        let frequency: RefreshFrequency = rawValue == nil && !hadPreviousInstallationState ? .adaptive : .fiveMinutes
+        // AI Monitor: fresh installs check quotas every minute so the desktop cards stay current.
+        let frequency: RefreshFrequency = rawValue == nil && !hadPreviousInstallationState ? .oneMinute : .fiveMinutes
         userDefaults.set(frequency.rawValue, forKey: "refreshFrequency")
         return frequency
     }

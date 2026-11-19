@@ -75,7 +75,7 @@ struct SettingsStoreKeychainPreferenceTests {
             #expect(local.object(forKey: AppGroupSupport.migrationVersionKey) == nil)
             #expect(local.object(forKey: "widgetSelectedProvider") == nil)
             #expect(store.debugDisableKeychainAccess == disabled)
-            #expect(store.refreshFrequency == .adaptive)
+            #expect(store.refreshFrequency == .oneMinute)
             // Config/secret migration remains independent of app-group migration.
             #expect(local.bool(forKey: "codexbar.legacySecretsMigrationCompleted") == !disabled)
 

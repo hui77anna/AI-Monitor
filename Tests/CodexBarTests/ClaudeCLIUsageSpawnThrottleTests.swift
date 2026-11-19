@@ -137,7 +137,7 @@ struct ClaudeCLIUsageSpawnThrottleTests {
             try await ClaudeCLIUsageSpawnThrottle.withNowOverrideForTesting(clock.now) {
                 try await ClaudeStatusProbe.$fetchOverride.withValue(self.successfulFetchOverride(attempts: attempts)) {
                     let first = try await self.fetch(strategy, context: context, interaction: .background)
-                    clock.advance(by: 299)
+                    clock.advance(by: ClaudeCLIUsageSpawnThrottle.minimumBackgroundSpawnInterval - 1)
                     _ = try await self.fetch(strategy, context: context, interaction: .background)
                     #expect(await attempts.snapshot() == 1)
                     clock.advance(by: 1)
@@ -244,8 +244,8 @@ struct ClaudeCLIUsageSpawnThrottleTests {
     func `a session reset boundary invalidates the cached CLI result before the spawn floor elapses`() async {
         let start = Date(timeIntervalSince1970: 1_000_000)
         let clock = TestClock(start)
-        // The cached session window resets two minutes out — well inside the 5-minute spawn floor.
-        let result = Self.makeFetchResult(sessionResetsAt: start.addingTimeInterval(2 * 60))
+        // The cached session window resets 30 seconds out — inside the 45-second spawn floor.
+        let result = Self.makeFetchResult(sessionResetsAt: start.addingTimeInterval(30))
         let key = ClaudeCLIUsageSpawnThrottle.Key(
             binary: "/bin/echo",
             accountScope: "scope-a",
@@ -255,10 +255,10 @@ struct ClaudeCLIUsageSpawnThrottleTests {
         await ClaudeCLIUsageSpawnThrottle.withIsolatedStoreForTesting {
             await ClaudeCLIUsageSpawnThrottle.withNowOverrideForTesting(clock.now) {
                 ClaudeCLIUsageSpawnThrottle.record(result, for: key)
-                clock.advance(by: 60)
+                clock.advance(by: 20)
                 #expect(ClaudeCLIUsageSpawnThrottle.cachedResult(for: key) != nil)
 
-                clock.advance(by: 5 * 60)
+                clock.advance(by: 20)
                 #expect(ClaudeCLIUsageSpawnThrottle.cachedResult(for: key) == nil)
             }
         }

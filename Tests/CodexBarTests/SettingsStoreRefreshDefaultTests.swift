@@ -21,7 +21,7 @@ struct SettingsStoreRefreshDefaultTests {
     }
 
     @Test
-    func `fresh install defaults to adaptive and persists the choice`() throws {
+    func `fresh install defaults to one minute and persists the choice`() throws {
         let suite = "SettingsStoreRefreshDefaultTests-fresh-\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -29,16 +29,17 @@ struct SettingsStoreRefreshDefaultTests {
 
         let store = self.makeStore(defaults: defaults, configStore: configStore)
 
-        #expect(store.refreshFrequency == .adaptive)
-        #expect(store.refreshFrequency.seconds == nil)
-        #expect(defaults.string(forKey: "refreshFrequency") == RefreshFrequency.adaptive.rawValue)
+        // AI Monitor defaults fresh installs to one-minute quota checks.
+        #expect(store.refreshFrequency == .oneMinute)
+        #expect(store.refreshFrequency.seconds == 60)
+        #expect(defaults.string(forKey: "refreshFrequency") == RefreshFrequency.oneMinute.rawValue)
         #expect(store.adaptiveActivityScanConsent == .undecided)
         #expect(defaults.string(forKey: "adaptiveActivityScanConsent") == "undecided")
         #expect(!store.shouldRequestAdaptiveActivityScanConsent)
 
         defaults.set(true, forKey: "providerDetectionCompleted")
         let reloaded = self.makeStore(defaults: defaults, configStore: configStore)
-        #expect(reloaded.refreshFrequency == .adaptive)
+        #expect(reloaded.refreshFrequency == .oneMinute)
         #expect(reloaded.adaptiveActivityScanConsent == .undecided)
     }
 
