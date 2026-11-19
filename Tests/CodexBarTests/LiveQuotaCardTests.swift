@@ -98,3 +98,12 @@ struct LiveQuotaCardTests {
         try png.write(to: URL(fileURLWithPath: directory).appendingPathComponent("ai-monitor-live-quota.png"))
     }
 }
+
+@MainActor
+struct DesktopCardHostingViewTests {
+    @Test func `desktop cards accept the first click so buttons work without activating the panel`() {
+        let view = DesktopCardHostingView(rootView: Text(verbatim: "card"))
+        #expect(view.acceptsFirstMouse(for: nil))
+        #expect(!NSHostingView(rootView: Text(verbatim: "card")).acceptsFirstMouse(for: nil))
+    }
+}

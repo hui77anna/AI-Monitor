@@ -18,7 +18,7 @@
 
 </div>
 
-> **Beta 15 · Build 198**：新增桌面额度悬浮卡片，外观与“用量”大号小组件完全相同（复用同一套组件代码），可点箭头切换 Codex／Claude。应用取到新额度后立即显示，不必等待系统刷新小组件；可在“设置 › 通用”中开关，或右键卡片隐藏，位置会被记住。原有小组件继续保留。
+> **Beta 15 · Build 199**：新增桌面额度悬浮卡片，外观与“用量”大号小组件完全相同（复用同一套组件代码），可点箭头切换 Codex／Claude。应用取到新额度后立即显示，不必等待系统刷新小组件；可在“设置 › 通用”中开关，或右键卡片隐藏，位置会被记住。原有小组件继续保留。
 >
 > **Beta 14 · Build 197**：修复 Claude 读取偶尔失败（例如 Claude Code 自动更新时）后卡片显示“暂无额度数据”的问题：现在继续显示上次的额度，5 分钟后自动重试；连续失败才逐步放慢到最长 1 小时。
 >
@@ -32,7 +32,7 @@
 
 ## 桌面预览
 
-**当前下载版本：AI Monitor Beta 15（Build 198）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.15/AI-Monitor-0.1.0-beta.15-macos-arm64.dmg)
+**当前下载版本：AI Monitor Beta 15（Build 199）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.15/AI-Monitor-0.1.0-beta.15-macos-arm64.dmg)
 
 安装后在“编辑小组件”左侧选择 **AI Monitor**。旧 Studio 用户若仍看到旧名称，请参阅[名称缓存处理说明](INSTALL.zh-CN.md#升级后左侧仍显示-codexbar-studio)。
 

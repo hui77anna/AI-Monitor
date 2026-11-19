@@ -108,7 +108,7 @@ final class LiveQuotaCardController: NSObject, NSWindowDelegate {
             panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
             panel.delegate = self
             if let origin = self.savedOrigin() { panel.setFrameOrigin(origin) }
-            panel.contentView = NSHostingView(rootView: LiveQuotaCardRoot(
+            panel.contentView = DesktopCardHostingView(rootView: LiveQuotaCardRoot(
                 model: self.model,
                 hide: { [weak self] in self?.setEnabled(false) }))
             self.panel = panel

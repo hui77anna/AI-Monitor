@@ -244,6 +244,13 @@ struct LiveMacCardView: View {
     }
 }
 
+/// Desktop cards are non-activating panels that never become key, so AppKit would spend every click on
+/// trying to activate the window and never deliver it to SwiftUI. Accepting the first mouse lets buttons
+/// (provider arrows, refresh) respond to a single click while the background still drags the card.
+final class DesktopCardHostingView<Content: View>: NSHostingView<Content> {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+}
+
 @MainActor
 final class LiveMacCardController: NSObject, NSWindowDelegate {
     static let shared = LiveMacCardController()
@@ -305,7 +312,7 @@ final class LiveMacCardController: NSObject, NSWindowDelegate {
             // card could reappear on another screen after relaunch. Store the exact global origin instead.
             if let origin = self.savedOrigin() { panel.setFrameOrigin(origin) }
             let root = LiveMacCardRoot(sampler: self.sampler, hide: { [weak self] in self?.setEnabled(false) })
-            panel.contentView = NSHostingView(rootView: root)
+            panel.contentView = DesktopCardHostingView(rootView: root)
             self.panel = panel
         }
         self.keepOnScreen()
