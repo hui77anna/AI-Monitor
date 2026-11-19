@@ -96,7 +96,10 @@ extension UsageStore {
         }.value
         // Failed attempts keep the existing reload behavior but cannot suppress the next write.
         // Opting into file persistence in tests never opts into WidgetKit side effects.
-        if shouldReload, !isRunningTests { reloadTimelines() }
+        if shouldReload, !isRunningTests {
+            reloadTimelines()
+            NotificationCenter.default.post(name: .aiMonitorWidgetSnapshotPublished, object: nil)
+        }
         return publication
     }
 

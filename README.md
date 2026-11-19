@@ -9,15 +9,17 @@
 
 [![macOS](https://img.shields.io/badge/macOS-14%2B-20232a?style=flat-square&logo=apple&logoColor=white)](INSTALL.zh-CN.md)
 [![Architecture](https://img.shields.io/badge/芯片-Apple%20Silicon-6256c7?style=flat-square)](INSTALL.zh-CN.md)
-[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%2014-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.14)
+[![Release](https://img.shields.io/badge/版本-0.1.0%20Beta%2015-d98963?style=flat-square)](https://github.com/hui77anna/AI-Monitor/releases/tag/v0.1.0-beta.15)
 [![License](https://img.shields.io/badge/License-MIT-337f76?style=flat-square)](LICENSE)
 
-**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.14/AI-Monitor-0.1.0-beta.14-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
+**[下载安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.15/AI-Monitor-0.1.0-beta.15-macos-arm64.dmg)** · [安装指南](INSTALL.zh-CN.md) · [架构设计](ARCHITECTURE.md) · [发布记录](https://github.com/hui77anna/AI-Monitor/releases)
 
 基于 [CodexBar](https://github.com/steipete/CodexBar) 的社区 UI 定制项目 · SwiftUI / WidgetKit 原生组件
 
 </div>
 
+> **Beta 15 · Build 198**：新增桌面额度悬浮卡片，外观与“用量”大号小组件完全相同（复用同一套组件代码），可点箭头切换 Codex／Claude。应用取到新额度后立即显示，不必等待系统刷新小组件；可在“设置 › 通用”中开关，或右键卡片隐藏，位置会被记住。原有小组件继续保留。
+>
 > **Beta 14 · Build 197**：修复 Claude 读取偶尔失败（例如 Claude Code 自动更新时）后卡片显示“暂无额度数据”的问题：现在继续显示上次的额度，5 分钟后自动重试；连续失败才逐步放慢到最长 1 小时。
 >
 > **Beta 13 · Build 196**：组件库只保留“切换器”和“用量”两种组件。Mac 状态统一由每秒刷新的桌面实时悬浮卡片显示（打开应用自动出现），不再提供约 5 分钟才更新的定时小组件，避免误加。修复多显示器时实时卡片重启后跳到其他屏幕的问题：现在会记住确切位置，位置不可见时自动回到主屏幕。
@@ -30,7 +32,7 @@
 
 ## 桌面预览
 
-**当前下载版本：AI Monitor Beta 14（Build 197）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.14/AI-Monitor-0.1.0-beta.14-macos-arm64.dmg)
+**当前下载版本：AI Monitor Beta 15（Build 198）** · [下载 macOS 安装包](https://github.com/hui77anna/AI-Monitor/releases/download/v0.1.0-beta.15/AI-Monitor-0.1.0-beta.15-macos-arm64.dmg)
 
 安装后在“编辑小组件”左侧选择 **AI Monitor**。旧 Studio 用户若仍看到旧名称，请参阅[名称缓存处理说明](INSTALL.zh-CN.md#升级后左侧仍显示-codexbar-studio)。
 
@@ -101,6 +103,7 @@ flowchart LR
 | **Codex 额度**（切换器／用量卡片） | 约 **5 分钟** | 应用每 5 分钟取一次新额度，取到后立即通知桌面组件刷新。 |
 | **Claude 额度**（切换器／用量卡片） | 约 **5 分钟** | 同上；偶尔读取失败时继续显示上次的额度（右上角显示数据时间），5 分钟后重试；连续失败才逐步放慢，最长 1 小时，避免被平台限流。 |
 | **7 日用量柱状图**（大号用量卡片） | 约 **15 分钟** | 统计本机 token 记录，计算量较大，间隔较长。 |
+| **桌面额度悬浮卡片** | 与额度相同，约 **5 分钟** | 应用取到新额度后**立即**显示，不等系统刷新小组件；外观与“用量”大号小组件相同。 |
 | **Mac 实时悬浮卡片** | CPU、内存 **每 1 秒**；存储每 30 秒 | 应用自带的桌面卡片，实时显示；可在“设置 › 通用”中开关。 |
 
 - 以上是应用取数据的间隔。桌面小组件何时重绘由 macOS 决定，偶尔会稍晚；即使没收到刷新通知，组件最长 30 分钟也会自行刷新一次。
@@ -111,7 +114,7 @@ flowchart LR
 
 | 项目 | 当前状态 |
 | --- | --- |
-| 对外版本 | `0.1.0-beta.14` |
+| 对外版本 | `0.1.0-beta.15` |
 | 应用内部版本 | `0.84.1` / Build `190`，保留上游版本以追踪兼容性 |
 | 上游基线 | [steipete/CodexBar · 7447bc7](https://github.com/steipete/CodexBar/commit/7447bc77c2497323d9c41e40164ce705533493c8) |
 | 主要变更 | 桌面卡片 UI、Mac 实时状态、Claude 五分钟额度缓存、显示名称与打包脚本 |

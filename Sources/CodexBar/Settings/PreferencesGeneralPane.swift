@@ -87,6 +87,7 @@ enum PreferredCurrencyOption {
 struct GeneralPane: View {
     @Bindable var settings: SettingsStore
     @AppStorage(LiveMacCardController.enabledKey) private var liveMacCardEnabled = true
+    @AppStorage(LiveQuotaCardController.enabledKey) private var liveQuotaCardEnabled = true
 
     var body: some View {
         Form {
@@ -142,6 +143,15 @@ struct GeneralPane: View {
                 }
                 .onChange(of: self.liveMacCardEnabled) { _, enabled in
                     LiveMacCardController.shared.setEnabled(enabled)
+                }
+
+                Toggle(isOn: self.$liveQuotaCardEnabled) {
+                    SettingsRowLabel(
+                        "桌面额度卡片",
+                        subtitle: "与“用量”小组件外观相同；应用取到新额度后立即显示，不等系统刷新小组件。")
+                }
+                .onChange(of: self.liveQuotaCardEnabled) { _, enabled in
+                    LiveQuotaCardController.shared.setEnabled(enabled)
                 }
             } header: {
                 Text(L("section_system"))

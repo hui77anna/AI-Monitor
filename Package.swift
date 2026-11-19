@@ -196,6 +196,7 @@ let package = Package(
                     .product(name: "Vortex", package: "Vortex"),
                     "AdaptiveRefreshCore",
                     "CodexBarCore",
+                    "AIMonitorQuotaUI",
                 ],
                 path: "Sources/CodexBar",
                 resources: [
@@ -205,6 +206,18 @@ let package = Package(
                     // Opt into Swift 6 strict concurrency (approachable migration path).
                     .enableUpcomingFeature("StrictConcurrency"),
                     .define("ENABLE_SPARKLE"),
+                ]),
+            // The floating quota card renders the widget's own tile views. Sources are symlinks to
+            // Sources/CodexBarWidget so the two cannot drift; only AIMonitorQuotaCard.swift is public API.
+            .target(
+                name: "AIMonitorQuotaUI",
+                dependencies: ["CodexBarCore"],
+                path: "Sources/AIMonitorQuotaUI",
+                resources: [
+                    .process("Resources"),
+                ],
+                swiftSettings: [
+                    .enableUpcomingFeature("StrictConcurrency"),
                 ]),
             .executableTarget(
                 name: "CodexBarWidget",
@@ -228,7 +241,7 @@ let package = Package(
         targets.append(.testTarget(
             name: "CodexBarTests",
             dependencies: [
-                "CodexBar", "CodexBarCore", "CodexBarCLI", "CodexBarCostStoreCrashProbe", "CodexBarWidget",
+                "CodexBar", "CodexBarCore", "CodexBarCLI", "CodexBarCostStoreCrashProbe", "CodexBarWidget", "AIMonitorQuotaUI",
                 .product(name: "Sparkle", package: "Sparkle"),
             ],
             path: "Tests",

@@ -638,3 +638,439 @@ struct ReferenceTokenChart: View {
         min(18, max(4, (width - 54) / 12))
     }
 }
+
+// MARK: - Shared row, chart and formatting helpers
+//
+// Kept in this file (rather than CodexBarWidgetViews.swift) so the app's floating quota card can compile the
+// same tile views through Sources/AIMonitorQuotaUI without the widget's App Intents.
+
+struct WidgetUsageRow: Identifiable, Equatable {
+    let id: String
+    let title: String
+    let percentLeft: Double?
+    /// Carried through from the row's rate window so tiles can show when the lane frees up; the
+    /// snapshot has always had it and the widgets used to drop it.
+    var resetsAt: Date?
+    var resetDescription: String?
+
+    static func smallWidgetRowLimit(for entry: WidgetSnapshot.ProviderEntry) -> Int? {
+        self.widgetRowLimit(for: entry, family: .small)
+    }
+
+    static func mediumWidgetRowLimit(for entry: WidgetSnapshot.ProviderEntry) -> Int? {
+        self.widgetRowLimit(for: entry, family: .medium)
+    }
+
+    private static func widgetRowLimit(
+        for entry: WidgetSnapshot.ProviderEntry,
+        family: ProviderWidgetFamily) -> Int?
+    {
+        guard let provider = entry.provider.firstPartyProvider else { return nil }
+        return ProviderDescriptorRegistry.descriptor(for: provider).presentation.widgetRowLimit(
+            rows: entry.usageRows,
+            family: family)
+    }
+
+    static func rows(
+        for entry: WidgetSnapshot.ProviderEntry,
+        limit: Int? = nil,
+        applyBindingCap: Bool = true,
+        now: Date = Date()) -> [WidgetUsageRow]
+    {
+        // Provider-specific by design: DeepSeek exposes no quota denominator, so a 100% bar would be misleading.
+        guard entry.provider != .deepseek else { return [] }
+        let rows: [WidgetUsageRow]
+        if let usageRows = entry.usageRows {
+            let resolvedSnapshots = usageRows.map { row in
+                guard row.window == nil,
+                      let window = self.legacyCodexRateWindow(for: row.id, entry: entry)
+                else {
+                    return row
+                }
+                return WidgetSnapshot.WidgetUsageRowSnapshot(
+                    id: row.id,
+                    title: row.title,
+                    percentLeft: row.percentLeft,
+                    window: window)
+            }
+            let sourceRows = resolvedSnapshots.map { row in
+                // The generic snapshot writer stores only a percentage for the primary/secondary/
+                // tertiary slots and leaves their reset on the entry's own windows, so recover it
+                // here. Without this the reset caption is present for Codex and absent for every
+                // other provider. Resolved reset only — the row keeps its own percentage.
+                let reset = row.window ?? self.slotWindow(for: row.id, entry: entry)
+                return WidgetUsageRow(
+                    id: row.id,
+                    title: row.title,
+                    percentLeft: row.window?.remainingPercent ?? row.percentLeft,
+                    resetsAt: reset?.resetsAt,
+                    resetDescription: reset?.resetDescription)
+            }
+            rows = applyBindingCap ? self.applyingCodexWeeklyCap(
+                sourceRows,
+                snapshots: resolvedSnapshots,
+                provider: entry.provider,
+                now: now) : sourceRows
+        } else {
+            let metadata = entry.provider.firstPartyProvider.flatMap { ProviderDefaults.metadata[$0] }
+            var defaultRows = [
+                WidgetUsageRow(
+                    id: "primary",
+                    title: metadata?.sessionLabel ?? "Session",
+                    percentLeft: entry.primary?.remainingPercent,
+                    resetsAt: entry.primary?.resetsAt,
+                    resetDescription: entry.primary?.resetDescription),
+                WidgetUsageRow(
+                    id: "secondary",
+                    title: metadata?.weeklyLabel ?? "Weekly",
+                    percentLeft: entry.secondary?.remainingPercent,
+                    resetsAt: entry.secondary?.resetsAt,
+                    resetDescription: entry.secondary?.resetDescription),
+            ]
+            if metadata?.supportsOpus == true {
+                defaultRows.append(WidgetUsageRow(
+                    id: "tertiary",
+                    title: metadata?.opusLabel ?? "Opus",
+                    percentLeft: entry.tertiary?.remainingPercent,
+                    resetsAt: entry.tertiary?.resetsAt,
+                    resetDescription: entry.tertiary?.resetDescription))
+            }
+            rows = defaultRows.filter { $0.percentLeft != nil }
+        }
+        guard let limit else { return rows }
+        // Provider-specific by design: Antigravity medium widgets select one constrained row per model family.
+        if entry.provider == .antigravity,
+           limit >= 2,
+           rows.contains(where: { $0.id.hasPrefix("antigravity-quota-summary-") })
+        {
+            var selected = AntigravityQuotaFamilyVisibility.KnownFamily.allCases.compactMap { family in
+                rows.filter {
+                    AntigravityQuotaFamilyVisibility.knownFamily(windowID: $0.id, title: $0.title) == family
+                }.min(by: self.isMoreConstrained)
+            }
+            let selectedIDs = Set(selected.map(\.id))
+            let fallbackRows = rows.enumerated()
+                .filter { !selectedIDs.contains($0.element.id) }
+                .sorted { lhs, rhs in
+                    switch (lhs.element.percentLeft, rhs.element.percentLeft) {
+                    case let (.some(left), .some(right)):
+                        left == right ? lhs.offset < rhs.offset : left < right
+                    case (.some, .none):
+                        true
+                    case (.none, .some):
+                        false
+                    case (.none, .none):
+                        lhs.offset < rhs.offset
+                    }
+                }
+                .map(\.element)
+            selected.append(contentsOf: fallbackRows.prefix(max(0, limit - selected.count)))
+            return selected
+        }
+        return Array(rows.prefix(max(0, limit)))
+    }
+
+    private static func applyingCodexWeeklyCap(
+        _ rows: [WidgetUsageRow],
+        snapshots: [WidgetSnapshot.WidgetUsageRowSnapshot],
+        provider: ProviderInstanceID,
+        now: Date) -> [WidgetUsageRow]
+    {
+        // Provider-specific by design: Codex weekly exhaustion suppresses its paired legacy session widget row.
+        guard provider == .codex,
+              let weekly = snapshots.first(where: { $0.id == "weekly" })?.window,
+              weekly.remainingPercent <= 0,
+              weekly.resetsAt.map({ $0 > now }) ?? true
+        else {
+            return rows
+        }
+        return rows.map { row in
+            guard row.id == "session" else { return row }
+            return WidgetUsageRow(
+                id: row.id,
+                title: row.title,
+                percentLeft: 0,
+                resetsAt: weekly.resetsAt,
+                resetDescription: weekly.resetDescription)
+        }
+    }
+
+    /// Reset metadata for the slot IDs the generic snapshot writer emits. Deliberately narrow:
+    /// provider-specific row IDs carry their own window when the writer has one.
+    static func slotWindow(for rowID: String, entry: WidgetSnapshot.ProviderEntry) -> RateWindow? {
+        switch rowID {
+        case "primary": entry.primary
+        case "secondary": entry.secondary
+        case "tertiary": entry.tertiary
+        default: nil
+        }
+    }
+
+    private static func legacyCodexRateWindow(
+        for rowID: String,
+        entry: WidgetSnapshot.ProviderEntry) -> RateWindow?
+    {
+        // Provider-specific by design: old Codex timelines reconstruct session/weekly windows by duration.
+        guard entry.provider == .codex else { return nil }
+        let candidates = [(entry.primary, "session"), (entry.secondary, "weekly")]
+        for (window, fallbackID) in candidates {
+            guard let window else { continue }
+            let classifiedID = switch window.windowMinutes {
+            case 300: "session"
+            case 10080: "weekly"
+            default: fallbackID
+            }
+            if classifiedID == rowID {
+                return window
+            }
+        }
+        return nil
+    }
+
+    static func compactTokenUsage(
+        for entry: WidgetSnapshot.ProviderEntry) -> WidgetSnapshot.TokenUsageSummary?
+    {
+        guard self.rows(for: entry).isEmpty,
+              entry.codeReviewRemainingPercent == nil
+        else {
+            return nil
+        }
+        return entry.tokenUsage
+    }
+
+    private static func isMoreConstrained(_ lhs: WidgetUsageRow, than rhs: WidgetUsageRow) -> Bool {
+        switch (lhs.percentLeft, rhs.percentLeft) {
+        case let (.some(left), .some(right)):
+            left < right
+        case (.some, .none):
+            true
+        case (.none, .some):
+            false
+        case (.none, .none):
+            false
+        }
+    }
+}
+
+enum WidgetUsageDisplay {
+    static func percent(fromRemaining remaining: Double?, showUsed: Bool) -> Double? {
+        guard let remaining else { return nil }
+        let clamped = max(0, min(100, remaining))
+        return showUsed ? 100 - clamped : clamped
+    }
+}
+
+struct UsageHistoryChart: View {
+    let points: [WidgetSnapshot.DailyUsagePoint]
+    let color: Color
+    let currencyCode: String?
+
+    var body: some View {
+        let isCostMode = UsageHistoryChartMode.isCostMode(self.points)
+        let values = self.points.map { point -> Double in
+            isCostMode ? (point.costUSD ?? 0) : Double(point.totalTokens ?? 0)
+        }
+        let scale = UsageChartScale(values: values)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Text(UsageHistoryChartCopy.title(dayCount: self.points.count))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Spacer(minLength: 4)
+                if let peak = UsageHistoryChartCopy.peak(
+                    maximum: scale.maximum,
+                    isCostMode: isCostMode,
+                    currencyCode: self.currencyCode)
+                {
+                    Text(peak)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .allowsTightening(true)
+                }
+            }
+            GeometryReader { geometry in
+                HStack(alignment: .bottom, spacing: 3) {
+                    ForEach(values.indices, id: \.self) { index in
+                        let fraction = scale.fraction(for: values[index])
+                        RoundedRectangle(cornerRadius: 2.5, style: .continuous)
+                            .fill(self.color.gradient)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: max(fraction > 0 ? 2 : 0, CGFloat(fraction) * geometry.size.height))
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            }
+            .frame(maxHeight: .infinity)
+            Rectangle()
+                .fill(Color.primary.opacity(WidgetLayout.separatorOpacity))
+                .frame(height: 1)
+            if let range = UsageHistoryChartCopy.range(points: self.points) {
+                HStack(spacing: 4) {
+                    Text(range.start)
+                    Spacer(minLength: 4)
+                    Text(range.end)
+                }
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .lineLimit(1)
+            }
+        }
+    }
+}
+
+enum UsageHistoryChartCopy {
+    static func title(dayCount: Int) -> String {
+        dayCount > 0 ? W("Last %d days", dayCount) : W("Daily usage")
+    }
+
+    static func peak(maximum: Double, isCostMode: Bool, currencyCode: String?) -> String? {
+        guard maximum > 0 else { return nil }
+        if isCostMode, let currencyCode {
+            return W(
+                "Peak %@",
+                String(describing: UsageFormatter.compactCurrencyString(maximum, currencyCode: currencyCode)))
+        }
+        guard !isCostMode else { return nil }
+        return W("Peak %@", String(describing: UsageFormatter.tokenCountString(Int(maximum))))
+    }
+
+    static func range(points: [WidgetSnapshot.DailyUsagePoint]) -> (start: String, end: String)? {
+        guard let first = points.first?.dayKey,
+              let last = points.last?.dayKey,
+              let start = WidgetFormat.dayLabel(first),
+              let end = WidgetFormat.dayLabel(last),
+              start != end
+        else { return nil }
+        return (start, end)
+    }
+}
+
+enum UsageHistoryChartMode {
+    static func isCostMode(_ points: [WidgetSnapshot.DailyUsagePoint]) -> Bool {
+        !points.isEmpty && points.allSatisfy { $0.costUSD != nil }
+    }
+}
+
+enum WidgetColors {
+    static func color(for instanceID: ProviderInstanceID) -> Color {
+        guard let provider = instanceID.firstPartyProvider else { return .secondary }
+        // The widget cannot read ~/.codexbar/config.json, so it resolves the user override from the
+        // copy the app mirrors into the App Group.
+        if ProviderAccentColors.sharedOverride(for: instanceID) == nil {
+            if provider == .codex { return Color(red: 0.68, green: 0.53, blue: 0.94) }
+            if provider == .claude { return Color(red: 0.93, green: 0.57, blue: 0.41) }
+        }
+        let color = ProviderAccentColors.sharedOverride(for: instanceID)
+            ?? ProviderDescriptorRegistry.descriptor(for: provider).branding.widgetColor
+        return Color(red: color.red, green: color.green, blue: color.blue)
+    }
+}
+
+struct WidgetBalanceLine: Equatable {
+    let title: String
+    let value: String
+}
+
+enum WidgetBalanceFormatter {
+    static func providerBalance(for entry: WidgetSnapshot.ProviderEntry) -> WidgetBalanceLine? {
+        // Provider-specific by design: these providers publish their widget value through the balance-text field.
+        guard entry.provider == .deepseek || entry.provider == .openrouter,
+              let value = entry.balanceText?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !value.isEmpty
+        else { return nil }
+        return WidgetBalanceLine(title: "Balance", value: value)
+    }
+
+    static func extraUsageCost(for entry: WidgetSnapshot.ProviderEntry) -> ProviderCostSnapshot? {
+        // Provider-specific by design: Devin encodes its extra-usage balance as a named provider-cost period.
+        guard entry.provider == .devin,
+              let cost = entry.providerCost,
+              cost.period == "Extra usage balance"
+        else { return nil }
+        return cost
+    }
+
+    static func extraUsageBalance(for entry: WidgetSnapshot.ProviderEntry) -> WidgetBalanceLine? {
+        guard let cost = self.extraUsageCost(for: entry) else { return nil }
+        return WidgetBalanceLine(
+            title: "Extra usage",
+            value: W("%@: %@", W("Balance"), WidgetFormat.currency(cost.used, code: cost.currencyCode)))
+    }
+}
+
+enum WidgetFormat {
+    /// Shown when a provider does not report a figure at all.
+    static let unavailable = "—"
+
+    static func percent(_ value: Double?) -> String {
+        guard let value else { return self.unavailable }
+        return String(format: "%.0f%%", value)
+    }
+
+    static func credits(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.2f", value)
+    }
+
+    static func costAndTokens(cost: Double?, tokens: Int?, currencyCode: String = "USD") -> String {
+        let costText = cost.map { self.currency($0, code: currencyCode) } ?? self.unavailable
+        if let tokens {
+            return "\(costText) · \(self.tokenCount(tokens))"
+        }
+        return costText
+    }
+
+    static func currency(_ value: Double, code: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = code
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? "\(code) \(String(format: "%.2f", value))"
+    }
+
+    static func tokenCount(_ value: Int) -> String {
+        "\(UsageFormatter.tokenCountString(value)) tokens"
+    }
+
+    private static let dayKeyFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    private static let dayLabelFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+        return formatter
+    }()
+
+    /// "2026-08-12" to "Aug 12". Returns nil for keys the chart cannot date.
+    static func dayLabel(_ dayKey: String) -> String? {
+        guard let date = self.dayKeyFormatter.date(from: dayKey) else { return nil }
+        return self.dayLabelFormatter.string(from: date)
+    }
+
+    /// Suffixes the title with the token snapshot's own age once it lags the entry's
+    /// freshness signal past `TokenUsageSummary.staleLagThreshold`.
+    static func tokenRowTitle(
+        _ base: String,
+        summary: WidgetSnapshot.TokenUsageSummary?,
+        entryUpdatedAt: Date) -> Text
+    {
+        guard let summary, summary.isStale(comparedTo: entryUpdatedAt), let updatedAt = summary.updatedAt else {
+            return Text(W(base))
+        }
+        return Text("\(W(base)) · \(WidgetDateText.offset(updatedAt))")
+    }
+}
